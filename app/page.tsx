@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
-import { CatalogSection } from "@/components/Catalog";
+import DigitalCatalog from "@/components/DigitalCatalog";
 import { ExperienceSection } from "@/components/Experience";
 import AboutSection from "@/components/AboutSection";
 import ServicesSection from "@/components/ServicesSection";
@@ -72,8 +72,8 @@ export default function Home() {
       {/* 2. HERO SECTION */}
       <HeroSection />
 
-      {/* 3. CATALOG SECTION (Nos Offres - Marques) */}
-      <CatalogSection />
+      {/* 3. DIGITAL CATALOG SECTION (Showroom Digital Filtrable 2025) */}
+      <DigitalCatalog />
 
       {/* 4. EXPERIENCE SECTION (Votre Accueil à CarZone - Frise 5 Étapes) */}
       <ExperienceSection />
