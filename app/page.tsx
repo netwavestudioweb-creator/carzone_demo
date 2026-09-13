@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import { CatalogSection } from "@/components/Catalog";
 import { ExperienceSection } from "@/components/Experience";
+import ServicesSection from "@/components/ServicesSection";
 import FooterContact from "@/components/FooterContact";
 import Image from "next/image";
 import Link from "next/link";
@@ -146,9 +147,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. SECTION ENGAGEMENT CARZONE */}
-      <section id="services" className="py-24 px-6 max-w-7xl mx-auto border-t border-white/5">
-        <div id="about" className="text-center max-w-3xl mx-auto mb-16">
+      {/* 6. SECTION ENGAGEMENT CARZONE (A Propos / Qui Sommes-Nous) */}
+      <section id="about" className="py-24 px-6 max-w-7xl mx-auto border-t border-white/5">
+        <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#D4AF37] mb-2">
             <Sparkles className="w-3.5 h-3.5" />
             <span>L&apos;Engagement CARZONE</span>
@@ -184,7 +185,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. FOOTER CONTACT & LOCALISATION (Témoignages & Coordonnées St Michel) */}
+      {/* 7. NOS SERVICES (Vente, SAV, Pièces, Entretien, Location) */}
+      <ServicesSection />
+
+      {/* 8. FOOTER CONTACT & LOCALISATION (Témoignages & Coordonnées St Michel) */}
       <FooterContact />
     </main>
   );
