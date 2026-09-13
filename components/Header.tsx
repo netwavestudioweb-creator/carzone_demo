@@ -19,12 +19,12 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { name: "Home", href: "#" },
-    { name: "Qui Sommes-Nous", href: "#about" },
-    { name: "Nos Marques", href: "#marques" },
-    { name: "Nos Services", href: "#services" },
-    { name: "Témoignages", href: "#temoignages" },
-    { name: "Contact", href: "#contact" },
+    { name: "Accueil", href: "/" },
+    { name: "Catalogue", href: "/catalogue" },
+    { name: "Qui Sommes-Nous", href: "/#about" },
+    { name: "Nos Marques", href: "/#marques" },
+    { name: "Nos Services", href: "/#services" },
+    { name: "Contact", href: "/#contact" },
   ];
 
   return (
@@ -35,7 +35,7 @@ export default function Header() {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* LOGO */}
-        <Link href="#" className="flex items-center gap-2.5 group">
+        <Link href="/" className="flex items-center gap-2.5 group">
           <Image
             src="/images/logo.png"
             alt="CarZone Logo"
