@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { ChevronRight, Sparkles, Zap, Shield, Compass, Layers } from "lucide-react";
 import Link from "next/link";
 
@@ -120,24 +121,23 @@ export default function Catalog() {
               <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
               <div>
-                {/* Zone d'image / Texture sombre haut de gamme */}
-                <div
-                  className={`relative h-44 rounded-xl mb-6 overflow-hidden bg-gradient-to-br ${brand.gradient} border border-white/5 flex flex-col items-center justify-center p-6 text-center`}
-                >
-                  {/* Trame de fond géométrique subtile */}
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(212,175,55,0.08),transparent_65%)] pointer-events-none" />
-                  
+                {/* Zone d'image au format 16:9 (aspect-video) */}
+                <div className="relative w-full aspect-video rounded-t-xl overflow-hidden bg-[#1A1A1A] mb-6 border border-white/5">
+                  <Image
+                    src="/images/cars/placeholder-car.jpg"
+                    alt={brand.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#161616] via-transparent to-transparent opacity-60 pointer-events-none" />
+
                   {/* Badge de catégorie */}
                   <span
-                    className={`absolute top-3 left-3 text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full border ${brand.accent} backdrop-blur-md`}
+                    className={`absolute top-3 left-3 text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full border ${brand.accent} backdrop-blur-md shadow-md`}
                   >
                     {brand.tag}
                   </span>
-
-                  {/* Icône emblème centrale avec animation discrète au survol */}
-                  <div className="w-14 h-14 rounded-2xl bg-[#0D0D0D]/80 border border-white/10 flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:border-[#D4AF37]/50 transition-all duration-500">
-                    <IconComponent className="w-7 h-7 text-[#D4AF37]" />
-                  </div>
 
                   {/* Ligne d'accent lumineuse en bas de la zone visuelle */}
                   <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:via-[#D4AF37]/60 transition-all duration-500" />

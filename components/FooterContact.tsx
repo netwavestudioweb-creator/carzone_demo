@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Star,
@@ -142,9 +143,26 @@ export default function FooterContact() {
                 aria-hidden="true"
               />
 
-              <div className="relative z-10">
+              <div className="relative z-10 text-center flex flex-col items-center">
+                {/* Avatar rond tout en haut de la carte */}
+                <div className="relative w-16 h-16 mb-4 rounded-full overflow-hidden border-2 border-[#D4AF37]/30 mx-auto shadow-md">
+                  <Image
+                    src="/images/clients/placeholder-avatar.jpg"
+                    alt={item.name}
+                    fill
+                    sizes="64px"
+                    className="object-cover"
+                  />
+                </div>
+
+                {/* Nom et rôle centrés sous la photo */}
+                <h4 className="font-syne text-base font-bold text-white group-hover:text-[#D4AF37] transition-colors">
+                  {item.name}
+                </h4>
+                <p className="text-xs text-[#71717A] mt-0.5 mb-5">{item.role}</p>
+
                 {/* 5 Étoiles dorées */}
-                <div className="flex items-center gap-1.5 mb-6">
+                <div className="flex items-center justify-center gap-1.5 mb-6">
                   {[...Array(item.rating)].map((_, i) => (
                     <Star
                       key={i}
@@ -154,22 +172,9 @@ export default function FooterContact() {
                 </div>
 
                 {/* Texte strict du témoignage */}
-                <p className="font-sans text-sm sm:text-base text-[#A1A1AA] leading-relaxed italic mb-8">
+                <p className="font-sans text-sm sm:text-base text-[#A1A1AA] leading-relaxed italic">
                   &ldquo;{item.text}&rdquo;
                 </p>
-              </div>
-
-              {/* Auteur */}
-              <div className="relative z-10 pt-4 border-t border-white/5 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#0D0D0D] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] font-syne font-bold text-sm">
-                  {item.name.charAt(0)}
-                </div>
-                <div>
-                  <h4 className="font-syne text-base font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                    {item.name}
-                  </h4>
-                  <p className="text-xs text-[#71717A]">{item.role}</p>
-                </div>
               </div>
             </motion.div>
           ))}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight, Shield } from "lucide-react";
 
@@ -35,12 +36,14 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* LOGO */}
         <Link href="#" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-lg bg-[#161616] border border-white/10 flex items-center justify-center text-[#D4AF37] group-hover:border-[#D4AF37]/50 transition-colors">
-            <Shield className="w-5 h-5" />
-          </div>
-          <span className="font-syne font-extrabold tracking-wider text-white text-2xl">
-            CAR<span className="text-[#D4AF37]">ZONE</span>
-          </span>
+          <Image
+            src="/images/logo.png"
+            alt="CarZone Logo"
+            width={140}
+            height={40}
+            className="object-contain"
+            priority
+          />
         </Link>
 
         {/* NAVIGATION DESKTOP */}
