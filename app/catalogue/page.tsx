@@ -27,14 +27,24 @@ export default function CataloguePage() {
   const [selectedCategory, setSelectedCategory] = useState("Tous");
   const [selectedEngine, setSelectedEngine] = useState("Tous");
 
-  // Options dynamiques déduites ou standardisées
-  const brands = ["Toutes", "BYD", "Jetour", "Changan", "Zeekr", "Hongqi", "Wuling"];
-  const categories = ["Tous", "SUV", "Berline", "Citadine", "4x4", "Monospace", "Luxe"];
+  // Options dynamiques exhaustives
+  const brands = [
+    "Toutes",
+    "BYD",
+    "Jetour",
+    "Changan",
+    "Hongqi",
+    "Zeekr",
+    "Volkswagen",
+    "Chery",
+    "Wuling",
+  ];
+  const categories = ["Tous", "SUV", "Berline", "Citadine", "Monospace", "Pick-up"];
   const engines = [
     { label: "Tous", value: "Tous" },
-    { label: "100% Électrique", value: "Électrique" },
-    { label: "Hybride Rechargeable", value: "Hybride" },
-    { label: "Thermique / Essence", value: "Thermique" },
+    { label: "100% Électrique", value: "100% Électrique" },
+    { label: "Hybride Rechargeable", value: "Hybride Rechargeable" },
+    { label: "Essence / Hybride", value: "Essence / Hybride" },
   ];
 
   // Filtrage en temps réel
