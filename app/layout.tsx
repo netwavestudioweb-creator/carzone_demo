@@ -21,20 +21,17 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "CARZONE | Concession Automobile de Prestige & Véhicules d'Exception - Cotonou, Bénin",
-  description:
-    "Découvrez la collection exclusive de CARZONE (Topcarzone Bénin) : Berlines de luxe, SUV d'exception, sportives d'élite et services automobiles sur-mesure à Cotonou.",
-  keywords: [
-    "CARZONE",
-    "Topcarzone Bénin",
-    "Voiture de luxe Cotonou",
-    "Concessionnaire automobile Bénin",
-    "Mercedes",
-    "Range Rover",
-    "Porsche",
-    "Véhicules d'exception",
-  ],
-  authors: [{ name: "CARZONE Prestige" }],
+  title: "CARZONE Bénin | La Maison des Voitures Chinoises et Multi-Marques",
+  description: "Découvrez la nouvelle génération de véhicules au Bénin (BYD, Jetour, Changan). Showroom moderne, véhicules hybrides et 100% électriques, vente, SAV et conciergerie privée à Cotonou.",
+  keywords: ["Voitures Bénin", "Achat véhicule Cotonou", "BYD Bénin", "Jetour Afrique", "Voiture hybride", "Concessionnaire automobile Cotonou", "Topcarzone"],
+  openGraph: {
+    title: "CARZONE Bénin | Concessionnaire Premium",
+    description: "L'avenir de l'automobile en toute confiance au Bénin. BYD, Jetour, Changan et plus.",
+    url: "https://www.topcarzone.com",
+    siteName: "CARZONE Bénin",
+    locale: "fr_FR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
