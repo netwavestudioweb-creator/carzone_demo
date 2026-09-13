@@ -23,13 +23,13 @@ import { Car } from "@/types";
 export default function CataloguePage() {
   // États de filtrage multicritères
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("Toutes");
+  const [selectedBrand, setSelectedBrand] = useState("Tous");
   const [selectedCategory, setSelectedCategory] = useState("Tous");
   const [selectedEngine, setSelectedEngine] = useState("Tous");
 
-  // Options dynamiques exhaustives
+  // Options dynamiques
   const brands = [
-    "Toutes",
+    "Tous",
     "BYD",
     "Jetour",
     "Changan",
@@ -43,8 +43,8 @@ export default function CataloguePage() {
   const engines = [
     { label: "Tous", value: "Tous" },
     { label: "100% Électrique", value: "100% Électrique" },
-    { label: "Hybride Rechargeable", value: "Hybride Rechargeable" },
-    { label: "Essence / Hybride", value: "Essence / Hybride" },
+    { label: "Hybride", value: "Hybride" },
+    { label: "Essence", value: "Essence" },
   ];
 
   // Filtrage en temps réel
@@ -58,7 +58,9 @@ export default function CataloguePage() {
 
       // Filtre de marque
       const matchesBrand =
-        selectedBrand === "Toutes" || car.brand.toLowerCase() === selectedBrand.toLowerCase();
+        selectedBrand === "Tous" ||
+        selectedBrand === "Toutes" ||
+        car.brand.toLowerCase() === selectedBrand.toLowerCase();
 
       // Filtre de carrosserie / catégorie
       const matchesCategory =
@@ -66,21 +68,27 @@ export default function CataloguePage() {
         car.category.toLowerCase() === selectedCategory.toLowerCase();
 
       // Filtre de motorisation
-      const matchesEngine =
-        selectedEngine === "Tous" || car.engine.toLowerCase() === selectedEngine.toLowerCase();
+      let matchesEngine = true;
+      if (selectedEngine === "100% Électrique") {
+        matchesEngine = car.engine.includes("Électrique") && !car.engine.includes("Hybride");
+      } else if (selectedEngine === "Hybride") {
+        matchesEngine = car.engine.includes("Hybride");
+      } else if (selectedEngine === "Essence") {
+        matchesEngine = car.engine.includes("Essence") || car.engine.includes("Thermique");
+      }
 
       return matchesSearch && matchesBrand && matchesCategory && matchesEngine;
     });
   }, [searchQuery, selectedBrand, selectedCategory, selectedEngine]);
 
   const hasActiveFilters =
-    selectedBrand !== "Toutes" ||
+    (selectedBrand !== "Tous" && selectedBrand !== "Toutes") ||
     selectedCategory !== "Tous" ||
     selectedEngine !== "Tous" ||
     searchQuery !== "";
 
   const handleResetFilters = () => {
-    setSelectedBrand("Toutes");
+    setSelectedBrand("Tous");
     setSelectedCategory("Tous");
     setSelectedEngine("Tous");
     setSearchQuery("");
