@@ -1,9 +1,8 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
-import AboutSection from "@/components/AboutSection";
-import FooterContact from "@/components/FooterContact";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,6 +12,9 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
+
+const AboutSection = dynamic(() => import("@/components/AboutSection"));
+const FooterContact = dynamic(() => import("@/components/FooterContact"));
 
 export default function Home() {
   const featuredCars = [
@@ -72,7 +74,7 @@ export default function Home() {
       <AboutSection />
 
       {/* 4. SECTION VÉHICULES EN VEDETTE AU SHOWROOM */}
-      <section id="showroom" className="py-32 px-6 max-w-7xl mx-auto border-t border-white/5 relative">
+      <section id="showroom" className="py-32 px-6 max-w-7xl mx-auto border-t border-white/5 relative content-visibility-auto">
         {/* Halo supprimé pour les perfs */}
 
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6 relative z-10">
@@ -152,7 +154,7 @@ export default function Home() {
       </section>
 
       {/* 4. SECTION ENGAGEMENT CARZONE (Garantie & Conciergerie) */}
-      <section id="engagement" className="py-32 px-6 max-w-7xl mx-auto border-t border-white/5 my-12 relative overflow-hidden">
+      <section id="engagement" className="py-32 px-6 max-w-7xl mx-auto border-t border-white/5 my-12 relative overflow-hidden content-visibility-auto">
         {/* Halo supprimé pour les perfs */}
 
         <div className="text-center max-w-3xl mx-auto mb-20 relative z-10">

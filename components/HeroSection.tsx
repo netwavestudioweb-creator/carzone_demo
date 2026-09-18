@@ -23,11 +23,13 @@ export default function HeroSection() {
           className="w-full h-full relative"
         >
           <Image
-            src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2500&q=100"
+            src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80"
             alt="Showroom Privé CARZONE"
             fill
             priority
-            sizes="100vw"
+            fetchPriority="high"
+            sizes="(max-width: 768px) 100vw, 100vw"
+            quality={80}
             className="object-cover object-[70%_50%] filter brightness-[0.35] contrast-125 saturate-50"
           />
         </motion.div>
