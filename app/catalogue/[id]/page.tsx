@@ -6,11 +6,65 @@ import { ArrowLeft, Zap, Shield, CheckCircle2, Calendar } from "lucide-react";
 import SimpleFooter from "@/components/SimpleFooter";
 import Header from "@/components/Header";
 
+import type { Metadata } from "next";
+
 // Generate static params for all cars to ensure fast SSR/SSG
 export async function generateStaticParams() {
   return carsInventory.map((car) => ({
     id: car.id,
   }));
+}
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const car = carsInventory.find((c) => c.id === params.id);
+
+  if (!car) {
+    return {
+      title: "Véhicule Introuvable | CARZONE Bénin",
+      description: "Le véhicule demandé n'est pas disponible dans le catalogue CARZONE Bénin.",
+    };
+  }
+
+  const title = `${car.brand} ${car.model} (${car.year}) | CARZONE Bénin`;
+  const description = `${car.brand} ${car.model} — ${car.category} (${car.engine}, ${car.power}). Découvrez ce véhicule d'exception au showroom CARZONE à Cotonou. Vente & réservation VIP.`;
+  const carImageUrl = car.image.startsWith("http")
+    ? car.image
+    : `https://www.topcarzone.com${car.image}`;
+
+  return {
+    title,
+    description,
+    keywords: [
+      `${car.brand} Bénin`,
+      `${car.brand} ${car.model}`,
+      `Achat ${car.brand} Cotonou`,
+      `${car.category}`,
+      `${car.engine} Cotonou`,
+      "CARZONE Bénin",
+    ],
+    openGraph: {
+      title,
+      description,
+      url: `https://www.topcarzone.com/catalogue/${car.id}`,
+      siteName: "CARZONE Bénin",
+      locale: "fr_FR",
+      type: "article",
+      images: [
+        {
+          url: carImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${car.brand} ${car.model} CARZONE Cotonou`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [carImageUrl],
+    },
+  };
 }
 
 export default function CarDetailPage({ params }: { params: { id: string } }) {
@@ -20,8 +74,39 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
     notFound();
   }
 
+  const carJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Car",
+    "name": `${car.brand} ${car.model}`,
+    "brand": {
+      "@type": "Brand",
+      "name": car.brand,
+    },
+    "model": car.model,
+    "vehicleModelDate": car.year,
+    "vehicleEngine": {
+      "@type": "EngineSpecification",
+      "name": car.engine,
+    },
+    "description": car.description,
+    "image": car.image.startsWith("http") ? car.image : `https://www.topcarzone.com${car.image}`,
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "XOF",
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "AutoDealer",
+        "name": "CARZONE Bénin",
+      },
+    },
+  };
+
   return (
     <main className="bg-[#0B0D14] min-h-screen text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(carJsonLd) }}
+      />
       <Header />
       
       {/* HERO SECTION DU VÉHICULE */}

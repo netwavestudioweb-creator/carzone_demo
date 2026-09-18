@@ -21,12 +21,12 @@ const getGlowColor = (brand: string) => {
 // Suppression des données codées en dur, utilisation de carsInventory importé
 
 const categories = [
-  { label: "Tous", value: "Tous" },
-  { label: "BYD", value: "BYD" },
-  { label: "Jetour", value: "Jetour" },
-  { label: "Changan", value: "Changan" },
-  { label: "Chery", value: "Chery" },
-  { label: "Premium (Hongqi, Zeekr, Mercedes)", value: "Premium" },
+  { label: "Tous les Véhicules (Cotonou)", value: "Tous" },
+  { label: "BYD Électrique & Hybride", value: "BYD" },
+  { label: "Jetour SUV Luxury", value: "Jetour" },
+  { label: "Changan Tech & Berlines", value: "Changan" },
+  { label: "Chery Crossover", value: "Chery" },
+  { label: "Luxe & Flagship (Zeekr, Hongqi, Mercedes)", value: "Premium" },
 ];
 
 export default function DigitalCatalog() {
