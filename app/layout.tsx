@@ -17,7 +17,7 @@ const inter = Inter({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#0D0D0D",
+  themeColor: "#050505",
 };
 
 export const metadata: Metadata = {
@@ -34,6 +34,8 @@ export const metadata: Metadata = {
   },
 };
 
+import WhatsAppButton from "@/components/WhatsAppButton";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,8 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${syne.variable} ${inter.variable} dark scroll-smooth`}>
-      <body className="bg-[#0D0D0D] text-[#A1A1AA] font-sans antialiased min-h-screen selection:bg-[#D4AF37] selection:text-[#0D0D0D]">
+      <body className="bg-[#050505] text-[#E4E4E7] font-sans antialiased min-h-screen selection:bg-[#E5C158] selection:text-[#050505]">
         {children}
+        <WhatsAppButton />
       </body>
     </html>
   );

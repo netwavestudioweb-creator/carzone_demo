@@ -4,210 +4,170 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { Sparkles, ArrowUpRight, CheckCircle2, Download, Search, SlidersHorizontal } from "lucide-react";
+import { carsInventory, Car } from "@/data/carsData";
 
-export interface CarModel {
-  id: number;
-  brand: string;
-  model: string;
-  type: string;
-  category: "BYD" | "Jetour" | "Changan" | "Premium";
-  image: string;
-  specs?: string;
-}
+// Helper pour la couleur du glow (lumière) selon la marque
+const getGlowColor = (brand: string) => {
+  switch (brand) {
+    case "BYD": return "rgba(59, 130, 246, 0.4)"; // Bleu électrique
+    case "Changan": return "rgba(239, 68, 68, 0.4)"; // Rouge dynamique
+    case "Jetour": return "rgba(245, 158, 11, 0.4)"; // Ambre chaleureux
+    case "ZEEKR": return "rgba(139, 92, 246, 0.4)"; // Violet tech
+    default: return "rgba(229, 193, 88, 0.3)"; // Or par défaut
+  }
+};
 
-const carsDataset: CarModel[] = [
-  {
-    id: 1,
-    brand: "BYD",
-    model: "Seal",
-    type: "100% Électrique",
-    category: "BYD",
-    image: "/images/cars/byd-seal.jpg",
-    specs: "530 ch • 570 km autonomie • 0-100 en 3.8s",
-  },
-  {
-    id: 2,
-    brand: "BYD",
-    model: "Tang EV",
-    type: "SUV Électrique",
-    category: "BYD",
-    image: "/images/cars/byd-tang.jpg",
-    specs: "7 Places • 517 ch • AWD Électrique",
-  },
-  {
-    id: 3,
-    brand: "Jetour",
-    model: "DASHING",
-    type: "SUV Premium",
-    category: "Jetour",
-    image: "/images/cars/jetour-dashing.jpg",
-    specs: "Design Futuriste • Boîte DCT • Confort VIP",
-  },
-  {
-    id: 4,
-    brand: "Jetour",
-    model: "Traveller",
-    type: "4x4 Off-Road",
-    category: "Jetour",
-    image: "/images/cars/jetour-traveller.jpg",
-    specs: "AWD Tout-Terrain • Mode X • Puissance Robuste",
-  },
-  {
-    id: 5,
-    brand: "Changan",
-    model: "UNI-K iDD",
-    type: "SUV Hybride",
-    category: "Changan",
-    image: "/images/cars/changan-unik.jpg",
-    specs: "PHEV • 1100 km autonomie • Luxe Lounge",
-  },
-  {
-    id: 6,
-    brand: "Hongqi",
-    model: "E-HS9",
-    type: "Luxe Électrique",
-    category: "Premium",
-    image: "/images/cars/hongqi-ehs9.jpg",
-    specs: "Limousine SUV Flagship • Finitions Royales",
-  },
-  {
-    id: 7,
-    brand: "ZEEKR",
-    model: "001",
-    type: "Shooting Brake",
-    category: "Premium",
-    image: "/images/cars/zeekr-001.jpg",
-    specs: "544 ch • Pack Luxe Extrême • 620 km",
-  },
-  {
-    id: 8,
-    brand: "Mercedes-Benz",
-    model: "EQE SUV",
-    type: "Luxe Électrique",
-    category: "Premium",
-    image: "/images/cars/benz-eqe.jpg",
-    specs: "Hyperscreen • Prestige Allemand • 408 ch",
-  },
-];
+// Suppression des données codées en dur, utilisation de carsInventory importé
 
 const categories = [
   { label: "Tous", value: "Tous" },
   { label: "BYD", value: "BYD" },
   { label: "Jetour", value: "Jetour" },
   { label: "Changan", value: "Changan" },
-  { label: "Premium (Hongqi, Zeekr, Benz)", value: "Premium" },
+  { label: "Chery", value: "Chery" },
+  { label: "Premium (Hongqi, Zeekr, Mercedes)", value: "Premium" },
 ];
 
 export default function DigitalCatalog() {
   const [activeFilter, setActiveFilter] = useState("Tous");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredCars = carsDataset.filter((car) => {
-    if (activeFilter === "Tous") return true;
-    return car.category === activeFilter;
+  const filteredCars = carsInventory.filter((car) => {
+    const isPremium = car.brand === "Hongqi" || car.brand === "ZEEKR" || car.brand === "Mercedes-Benz" || car.brand === "Tank" || car.brand === "LINK&CO";
+    const matchesCategory = activeFilter === "Tous" || 
+                            car.brand === activeFilter || 
+                            (activeFilter === "Premium" && isPremium);
+    
+    const matchesSearch = car.brand.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          car.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          car.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
 
   return (
-    <section id="marques" className="py-24 bg-[#0D0D0D] text-white min-h-screen relative overflow-hidden border-t border-white/5">
-      {/* Halo d'ambiance sombre */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#D4AF37]/5 blur-[150px] pointer-events-none" />
+    <section id="marques" className="py-24 bg-[#0B0D14] text-white min-h-screen relative overflow-hidden border-t border-white/5">
+      {/* Halo allégé pour la performance */}
+      {/* Halo supprimé pour les perfs */}
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* EN-TÊTE DE SECTION */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold tracking-widest text-[#D4AF37] uppercase mb-4 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Catalogue Officiel CARZONE 2025</span>
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-semibold tracking-widest text-[#E5C158] uppercase mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E5C158] animate-pulse" />
+            <span>Showroom Privé &amp; Sélection d&apos;Élite</span>
           </div>
 
-          <h2 className="font-syne text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
-            Showroom Digital &amp; Modèles d&apos;Exception
+          <h2 className="font-syne text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tighter leading-[1.1]">
+            Nos Marques &amp; Modèles Vedettes
           </h2>
 
-          <p className="mt-4 text-[#A1A1AA] text-sm sm:text-base leading-relaxed font-sans max-w-2xl mx-auto">
-            Découvrez notre sélection interactive des meilleurs véhicules électriques, hybrides et premium. Filtrez par marque pour trouver le véhicule adapté à vos exigences.
+          <p className="mt-6 text-white/50 text-sm sm:text-base leading-relaxed font-light max-w-2xl mx-auto">
+            Explorez notre sélection de véhicules prestigieux électriques, hybrides et thermiques d&apos;exception.
           </p>
         </div>
 
-        {/* SYSTÈME DE FILTRAGE PAR MARQUE */}
-        <div className="flex overflow-x-auto gap-3 pb-4 scrollbar-hide mb-12 justify-start sm:justify-center">
-          {categories.map((cat) => {
-            const isActive = activeFilter === cat.value;
-            return (
-              <button
-                key={cat.value}
-                onClick={() => setActiveFilter(cat.value)}
-                className={`px-6 py-2.5 rounded-full border text-sm font-medium transition-all duration-300 whitespace-nowrap cursor-pointer shrink-0 ${
-                  isActive
-                    ? "bg-[#D4AF37] text-black border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.4)] font-bold"
-                    : "bg-[#161616] border-white/10 text-white/80 hover:text-white hover:border-white/30"
-                }`}
-              >
-                {cat.label}
-              </button>
-            );
-          })}
+        {/* BARRE DE RECHERCHE ET FILTRES */}
+        <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
+          {/* Recherche */}
+          <div className="relative w-full md:w-1/2 lg:w-1/3">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+            <input
+              type="text"
+              placeholder="Rechercher un modèle, marque ou type..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-4 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#E5C158] focus:ring-1 focus:ring-[#E5C158] transition-all"
+            />
+          </div>
+
+          {/* Filtres Rapides (Marques) */}
+          <div className="flex overflow-x-auto gap-2 scrollbar-hide w-full md:w-auto">
+            {categories.map((cat) => {
+              const isActive = activeFilter === cat.value;
+              return (
+                <button
+                  key={cat.value}
+                  onClick={() => setActiveFilter(cat.value)}
+                  className={`px-5 py-2.5 rounded-full border text-[10px] sm:text-xs font-bold tracking-widest transition-colors duration-200 whitespace-nowrap cursor-pointer shrink-0 uppercase ${
+                    isActive
+                      ? "bg-[#E5C158] text-black border-[#E5C158] shadow-[0_0_15px_rgba(229,193,88,0.3)]"
+                      : "bg-white/5 border-white/10 text-white/50 hover:text-white hover:border-white/30"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* GRILLE RESPONSIVE DES VÉHICULES AVEC ANIMATION LAYOUT */}
+        {/* GRILLE RESPONSIVE DES VÉHICULES (Optimisation des animations) */}
         <motion.div
           layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          transition={{ duration: 0.3 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {filteredCars.map((car) => (
               <motion.div
                 key={car.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.35, ease: "easeInOut" }}
-                className="bg-[#161616] rounded-2xl overflow-hidden border border-white/5 group hover:border-[#D4AF37]/50 transition-colors flex flex-col justify-between shadow-luxury-card"
+                initial={{ opacity: 0, scale: 0.98, y: 30 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.4 }}
+                className="relative bg-white/5 rounded-2xl overflow-hidden border border-white/10 group hover:border-white/30 transition-all flex flex-col justify-between shadow-lg"
               >
+                {/* Effet de lumière (Glow) coloré */}
+                <div 
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none blur-3xl"
+                  style={{ background: `radial-gradient(circle at 50% 0%, ${getGlowColor(car.brand)}, transparent 70%)` }}
+                />
                 {/* IMAGE DU VÉHICULE (16:9) */}
-                <div className="aspect-video relative overflow-hidden bg-[#1A1A1A]">
+                <div className="aspect-video relative overflow-hidden bg-black/80 block">
                   <Image
                     src={car.image}
                     alt={`${car.brand} ${car.model}`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                    priority={car.id === "2" || car.id === "1"}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#161616] via-transparent to-transparent opacity-60 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D14] via-transparent to-transparent opacity-80 pointer-events-none" />
                   
                   {/* Badge de type */}
-                  <span className="absolute top-3 left-3 text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-[#0D0D0D]/85 border border-[#D4AF37]/30 text-[#D4AF37] backdrop-blur-md shadow-sm">
-                    {car.type}
+                  <span className="absolute top-3 left-3 text-[9px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full bg-black/60 border border-[#E5C158]/30 text-[#E5C158] shadow-sm">
+                    {car.engine}
                   </span>
                 </div>
 
                 {/* CONTENU TEXTE */}
                 <div className="p-6 flex-1 flex flex-col justify-between">
                   <div>
-                    <span className="text-xs uppercase tracking-widest font-bold text-[#D4AF37] block mb-1">
-                      {car.brand}
-                    </span>
-                    <h3 className="font-syne text-xl font-bold text-white group-hover:text-[#D4AF37] transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] uppercase tracking-widest font-extrabold text-[#E5C158] block">
+                        {car.brand}
+                      </span>
+                    </div>
+                    <h3 className="font-syne text-lg font-bold text-white group-hover:text-[#E5C158] transition-colors leading-snug">
                       {car.model}
                     </h3>
-                    {car.specs && (
-                      <p className="mt-2 text-xs text-[#71717A] py-1.5 px-2.5 rounded-lg bg-[#0D0D0D] border border-white/5 line-clamp-1">
-                        {car.specs}
-                      </p>
-                    )}
+                    <p className="mt-3 text-[11px] text-white/70 py-2 px-3 rounded-lg bg-black/40 border border-white/10 font-medium leading-relaxed">
+                      {car.power ? car.power : car.category} • {car.acceleration ? car.acceleration : car.year}
+                    </p>
                   </div>
 
-                  {/* BOUTON "DEMANDER UN DEVIS" */}
-                  <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
+                  {/* BOUTON UNIQUE : DEMANDER UN DEVIS */}
+                  <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between">
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-white/50 group-hover:text-white transition-colors">Découvrir le modèle</span>
                     <Link
-                      href="#contact"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0D0D0D] border border-white/10 text-xs font-semibold text-white group-hover:border-[#D4AF37] group-hover:text-[#D4AF37] transition-all"
+                      href={`/catalogue/${car.id}`}
+                      className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white hover:bg-[#E5C158] hover:border-[#E5C158] hover:text-black transition-colors shadow-sm text-xs uppercase tracking-widest font-bold"
                     >
-                      <span>Demander un devis</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
+                      Détails
                     </Link>
-                    <span className="text-[10px] font-mono text-[#52525B]">2025</span>
                   </div>
                 </div>
               </motion.div>
@@ -216,26 +176,36 @@ export default function DigitalCatalog() {
         </motion.div>
 
         {/* BANDEAU RASSURANT EN BAS DE CATALOGUE */}
-        <div className="mt-16 p-6 rounded-xl bg-[#161616] border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] shrink-0">
-              <CheckCircle2 className="w-5 h-5" />
+        <div className="mt-16 p-8 rounded-2xl bg-white/5 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#E5C158]/10 border border-[#E5C158]/30 flex items-center justify-center text-[#E5C158] shrink-0">
+              <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-syne text-sm font-bold text-white">
+              <h4 className="font-syne text-xl font-bold text-white mb-1">
                 Un modèle spécifique en tête ?
               </h4>
-              <p className="text-xs text-[#A1A1AA]">
-                Importation directe sous 4 à 6 semaines avec garantie et formalités douanières complètes.
+              <p className="text-xs text-white/60 font-light">
+                Importation directe sous 4 à 6 semaines avec garantie.
               </p>
             </div>
           </div>
-          <Link
-            href="#contact"
-            className="px-5 py-2 rounded-full border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-semibold text-xs transition-colors shrink-0 uppercase tracking-wider"
-          >
-            Commande Spéciale
-          </Link>
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 shrink-0">
+            <a
+              href="/downloads/carzone-catalog-2025.pdf"
+              download="Catalogue-CARZONE-2025.pdf"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 hover:border-[#E5C158] text-white hover:text-[#E5C158] font-bold text-[10px] uppercase tracking-widest transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              <span>Catalogue PDF</span>
+            </a>
+            <Link
+              href="/catalogue"
+              className="px-6 py-3 rounded-full bg-[#E5C158] text-black font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-colors"
+            >
+              Tout le Catalogue
+            </Link>
+          </div>
         </div>
       </div>
     </section>

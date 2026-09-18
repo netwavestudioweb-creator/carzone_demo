@@ -45,29 +45,32 @@ const steps: StepItem[] = [
 
 export default function Experience() {
   return (
-    <section id="experience" className="py-24 bg-[#0A0A0A] text-white relative overflow-hidden">
+    <section id="experience" className="py-32 bg-[#0B0D14] text-white relative overflow-hidden border-t border-white/5">
+      {/* Halo d'ambiance */}
+      {/* Halo supprimé pour les perfs */}
+
       {/* En-tête */}
-      <div className="max-w-4xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold tracking-widest text-[#D4AF37] uppercase mb-4">
-          <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+      <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+        <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest text-[#E5C158] uppercase mb-6 backdrop-blur-md">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#E5C158] animate-pulse" />
           <span>Parcours Client Privilégié</span>
         </div>
 
-        {/* Titre (Syne, H2, text-center) */}
-        <h2 className="font-syne text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
-          Votre Accueil à CarZone
+        {/* Titre */}
+        <h2 className="font-syne text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tighter leading-[1.1]">
+          Votre Accueil à <span className="text-transparent bg-clip-text bg-gradient-to-r from-white/40 to-white/10">CarZone</span>
         </h2>
 
-        {/* Sous-titre (Inter, text-center, text-[#A1A1AA], mb-20) */}
-        <p className="font-sans text-[#A1A1AA] text-base sm:text-lg max-w-2xl mx-auto mt-4 mb-20 leading-relaxed">
-          Bien plus qu&apos;un concessionnaire : votre partenaire pour rouler vers l&apos;avenir.
+        {/* Sous-titre */}
+        <p className="font-light text-white/50 text-base sm:text-lg max-w-2xl mx-auto mt-8 mb-24 leading-relaxed">
+          Bien plus qu&apos;un concessionnaire : votre partenaire exclusif pour rouler vers l&apos;avenir avec élégance et sérénité.
         </p>
       </div>
 
       {/* STRUCTURE DE LA FRISE (Timeline) */}
-      <div className="max-w-5xl mx-auto px-6 relative">
+      <div className="max-w-5xl mx-auto px-6 relative z-10">
         {/* Ligne verticale centrale (Desktop) ou latérale (Mobile) */}
-        <div className="absolute left-8 md:left-1/2 top-4 bottom-4 w-[1px] -translate-x-1/2 bg-gradient-to-b from-[#D4AF37]/0 via-[#D4AF37]/30 to-[#D4AF37]/0 pointer-events-none" />
+        <div className="absolute left-8 md:left-1/2 top-4 bottom-4 w-[1px] -translate-x-1/2 bg-gradient-to-b from-transparent via-[#E5C158]/30 to-transparent pointer-events-none" />
 
         <div className="space-y-12 md:space-y-20 relative">
           {steps.map((step, idx) => {
@@ -80,7 +83,7 @@ export default function Experience() {
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.7, delay: 0.1 }}
+                transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className={`relative flex flex-col md:flex-row items-start ${
                   isEven ? "md:flex-row-reverse" : ""
                 }`}
@@ -88,40 +91,43 @@ export default function Experience() {
                 {/* BLOC CARTE CONTENU (alternance gauche/droite sur desktop) */}
                 <div
                   className={`w-full md:w-1/2 pl-16 md:pl-0 ${
-                    isEven ? "md:pl-12" : "md:pr-12"
+                    isEven ? "md:pl-16" : "md:pr-16"
                   }`}
                 >
-                  <div className="bg-[#161616] border border-white/5 rounded-2xl p-6 sm:p-8 relative overflow-hidden group hover:border-[#D4AF37]/40 transition-all duration-300 shadow-luxury-card">
-                    {/* Numéro en grand filigrane gris très sombre */}
+                  <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 sm:p-10 relative overflow-hidden group hover:bg-white/10 hover:border-[#E5C158]/30 transition-all duration-500 shadow-sm hover:shadow-[0_20px_40px_rgba(229,193,88,0.05)] backdrop-blur-xl">
+                    {/* Numéro en grand filigrane sombre */}
                     <span
                       aria-hidden="true"
-                      className="text-[#1A1A1A] text-6xl sm:text-7xl font-black absolute top-2 right-4 -z-10 font-syne select-none pointer-events-none group-hover:text-[#222222] transition-colors"
+                      className="text-white/5 text-7xl sm:text-8xl font-black absolute -top-4 -right-4 -z-10 font-syne select-none pointer-events-none group-hover:text-[#E5C158]/10 transition-colors duration-500"
                     >
                       {step.number}
                     </span>
 
+                    {/* Lueur magnétique au survol */}
+                    <div className="absolute top-0 left-0 w-32 h-32 bg-[#E5C158]/10 blur-[40px] rounded-full -translate-x-1/2 -translate-y-1/2 group-hover:bg-[#E5C158]/20 transition-colors duration-500 pointer-events-none" />
+
                     {/* Titre de l'étape */}
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#D4AF37] px-2.5 py-1 rounded-md bg-[#D4AF37]/10 border border-[#D4AF37]/20">
+                    <div className="flex items-center gap-3 mb-6">
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-black px-3 py-1.5 rounded-full bg-[#E5C158] shadow-[0_0_15px_rgba(229,193,88,0.3)]">
                         Étape {step.number}
                       </span>
                     </div>
 
-                    <h3 className="font-syne text-xl sm:text-2xl font-bold text-white mb-4 group-hover:text-[#D4AF37] transition-colors">
+                    <h3 className="font-syne text-2xl sm:text-3xl font-bold text-white mb-4 group-hover:text-[#E5C158] transition-colors duration-500">
                       {step.title}
                     </h3>
 
                     {/* Texte descriptif strict */}
-                    <p className="font-sans text-sm sm:text-base text-[#A1A1AA] leading-relaxed">
+                    <p className="font-light text-sm sm:text-base text-white/50 leading-relaxed group-hover:text-white/70 transition-colors duration-500">
                       {step.text}
                     </p>
                   </div>
                 </div>
 
                 {/* POINT DE CONNEXION AVEC ICÔNE SUR LA LIGNE CENTRALE */}
-                <div className="absolute left-8 md:left-1/2 top-6 -translate-x-1/2 flex items-center justify-center">
-                  <div className="bg-[#161616] border border-[#D4AF37]/50 text-[#D4AF37] p-3 rounded-full shadow-gold-glow-sm relative z-10 transition-transform duration-300 hover:scale-110">
-                    <Icon className="w-5 h-5" />
+                <div className="absolute left-8 md:left-1/2 top-10 -translate-x-1/2 flex items-center justify-center">
+                  <div className="w-14 h-14 bg-[#0B0D14] border-2 border-[#E5C158]/30 text-[#E5C158] flex items-center justify-center rounded-2xl shadow-[0_0_20px_rgba(229,193,88,0.15)] relative z-10 transition-all duration-500 hover:scale-110 hover:bg-[#E5C158]/10 hover:border-[#E5C158]">
+                    <Icon className="w-6 h-6" />
                   </div>
                 </div>
               </motion.div>
