@@ -87,11 +87,11 @@ export default function FooterContact() {
 
       if (result.success) {
         setIsSuccess(true);
-        setFormData({ name: "", email: "", message: "" });
+        setFormData({ name: "", email: "", message: "", botcheck: "" });
       } else {
         if (accessKey === "YOUR_ACCESS_KEY_HERE") {
           setIsSuccess(true);
-          setFormData({ name: "", email: "", message: "" });
+          setFormData({ name: "", email: "", message: "", botcheck: "" });
         } else {
           setErrorMessage(result.message || "Une erreur est survenue lors de l'envoi.");
         }
@@ -99,7 +99,7 @@ export default function FooterContact() {
     } catch {
       if (accessKey === "YOUR_ACCESS_KEY_HERE") {
         setIsSuccess(true);
-        setFormData({ name: "", email: "", message: "" });
+        setFormData({ name: "", email: "", message: "", botcheck: "" });
       } else {
         setErrorMessage("Une erreur de connexion est survenue. Veuillez réessayer.");
       }
