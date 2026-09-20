@@ -216,7 +216,7 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
                 <p className="text-xs text-white/50 mb-4 font-light text-center">
                   Ce véhicule est actuellement <strong className="text-white">{car.status}</strong>. Prenez rendez-vous pour une présentation privée.
                 </p>
-                <a href="https://wa.me/22900000000" target="_blank" className="flex items-center justify-center gap-3 w-full py-4 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full hover:bg-[#E5C158] transition-colors">
+                <a href="https://wa.me/2290192626262" target="_blank" className="flex items-center justify-center gap-3 w-full py-4 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full hover:bg-[#E5C158] transition-colors">
                   <Calendar className="w-4 h-4" />
                   Prendre Rendez-vous
                 </a>
