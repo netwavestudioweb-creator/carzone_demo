@@ -102,7 +102,9 @@ export default function TestimonialsSection() {
                     {item.name}
                   </h4>
                   {item.verifiedBadge && (
-                    <CheckCircle2 className="w-4 h-4 text-[#E5C158]" title="Acheteur Certifié Cotonou" />
+                    <span title="Acheteur Certifié Cotonou">
+                      <CheckCircle2 className="w-4 h-4 text-[#E5C158]" />
+                    </span>
                   )}
                 </div>
                 <p className="text-xs text-white/50 font-light">
