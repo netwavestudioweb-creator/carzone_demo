@@ -1,0 +1,890 @@
+<title>Refonte CARZONE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Roboto:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: document column (plan) + full-width scaled "stages" holding 1200px desktop mockups and 340px phone mockups.
+   Mockup palette = the live topcarzone.com charte (white, CARZONE gold #CC9000 / #FFB400 / #996C00, grey text, Montserrat + Roboto). */
+:root {
+  /* Document (theme-aware) */
+  --bg: #F6F5F2;
+  --surface: #FFFFFF;
+  --ink: #1C1B18;
+  --muted: #5F5C55;
+  --line: #E1DED7;
+  --accent: #8A6100;
+  --accent-soft: #FBF1DA;
+  --red: #B42318;
+  --red-soft: #FCE9E7;
+  --amber: #8A5300;
+  --amber-soft: #FBEFD9;
+  --ok: #1D7347;
+  --ok-soft: #E4F3EA;
+
+  /* Mockups: the proposed site (fixed light look, it is a picture of the site) */
+  --m-bg: #FFFFFF;
+  --m-soft: #F5F4F1;
+  --m-ink: #222222;
+  --m-mute: #666666;
+  --m-line: #E3E1DC;
+  --m-gold: #CC9000;      /* couleur marque relevée sur le site */
+  --m-gold-btn: #FFB400;  /* boutons du site actuel */
+  --m-gold-dark: #996C00; /* titres du site actuel */
+  --m-dark: #1F1D1A;
+  --m-wa: #1A9E4B;
+  --m-show: #1D7347;
+
+  --f-display: "Montserrat", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Roboto", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12110F; --surface: #1B1A17; --ink: #ECE9E3; --muted: #A39F96; --line: #2E2C28;
+    --accent: #F0B93A; --accent-soft: #33280F; --red: #FF8A7E; --red-soft: #3A1D1A;
+    --amber: #EDB25A; --amber-soft: #36290F; --ok: #66C995; --ok-soft: #15301F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12110F; --surface: #1B1A17; --ink: #ECE9E3; --muted: #A39F96; --line: #2E2C28;
+  --accent: #F0B93A; --accent-soft: #33280F; --red: #FF8A7E; --red-soft: #3A1D1A;
+  --amber: #EDB25A; --amber-soft: #36290F; --ok: #66C995; --ok-soft: #15301F;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+h1, h2, h3, h4 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.12; }
+p { margin: 0; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code { font-family: var(--f-mono); font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); padding: 0 4px; border-radius: 3px; }
+
+.wrap { max-width: 1240px; margin: 0 auto; }
+
+/* Header */
+.doc-head { padding-block: 56px 32px; display: grid; gap: 20px; border-bottom: 1px solid var(--line); }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
+.pill.wait { background: var(--amber-soft); color: var(--amber); }
+.pill.crit { background: var(--red-soft); color: var(--red); }
+.pill.imp { background: var(--amber-soft); color: var(--amber); }
+.pill.min { background: var(--accent-soft); color: var(--accent); }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.doc-head h1 { font-size: clamp(34px, 5.6vw, 64px); font-weight: 800; letter-spacing: -.02em; }
+.doc-head h1 span { color: var(--accent); }
+.lead { font-size: 18.5px; color: var(--muted); max-width: 66ch; }
+.toc { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 14px; font-weight: 500; }
+.toc a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Sections */
+section.doc { padding-block: 64px 8px; display: grid; gap: 28px; }
+.sec-head { display: grid; gap: 10px; }
+.sec-head .k { font-family: var(--f-mono); font-size: 12px; color: var(--accent); letter-spacing: .06em; text-transform: uppercase; }
+.sec-head h2 { font-size: clamp(26px, 3.4vw, 38px); font-weight: 800; letter-spacing: -.01em; }
+.sec-head p { color: var(--muted); max-width: 68ch; }
+h3.sub { font-size: 21px; font-weight: 700; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+h3.sub small { font-family: var(--f-mono); font-size: 12px; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+
+/* Live site facts */
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); overflow: hidden; }
+.facts div { padding: 18px 20px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; gap: 4px; margin: 0 -1px -1px 0; }
+.facts b { font-family: var(--f-display); font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.facts span { font-size: 14px; color: var(--muted); }
+
+.proofs { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.proof { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; margin: 0; }
+.proof .ph { aspect-ratio: 16/10; position: relative; background: var(--line); max-width: 100%; }
+.proof .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.proof .ph .tag { position: absolute; left: 10px; top: 10px; background: #1C1B18; color: #FFFFFF; font-family: var(--f-mono); font-size: 11px; padding: 4px 8px; border-radius: 3px; }
+.proof .quote { aspect-ratio: 16/10; background: #FFFFFF; color: #737373; padding: 22px; display: grid; align-content: center; gap: 10px; font-family: "Roboto", sans-serif; font-size: 14px; border-bottom: 1px solid var(--line); }
+.proof .quote b { color: #996C00; font-family: "Montserrat", sans-serif; }
+.proof .tx { padding: 16px 18px 18px; display: grid; gap: 6px; align-content: start; }
+.proof .tx b { font-size: 15px; }
+.proof .tx p { font-size: 14px; color: var(--muted); }
+
+.findings { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; }
+.findings table { width: 100%; border-collapse: collapse; min-width: 700px; font-size: 14.5px; }
+.findings th, .findings td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.findings th { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 500; }
+.findings tr:last-child td { border-bottom: 0; }
+.findings td:first-child { white-space: nowrap; }
+.findings td:last-child { color: var(--muted); font-size: 13.5px; }
+
+/* Direction */
+.dir-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 22px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.card h4 { font-size: 18px; font-weight: 700; }
+.card p, .card li { font-size: 14.5px; color: var(--muted); }
+.card ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.sw { display: grid; gap: 6px; font-size: 12px; align-content: start; }
+.sw i { display: block; height: 56px; border-radius: 4px; border: 1px solid var(--line); position: relative; }
+.sw i em { position: absolute; left: 8px; bottom: 6px; font-style: normal; font-family: var(--f-mono); font-size: 11px; }
+.sw b { font-weight: 600; font-size: 13px; }
+.sw span { font-family: var(--f-mono); color: var(--muted); font-size: 11px; }
+.contrast { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.contrast div { border-radius: 4px; padding: 10px 12px; font-size: 13px; display: grid; gap: 2px; }
+.contrast small { font-family: var(--f-mono); font-size: 10.5px; }
+.spec-type { display: grid; gap: 12px; }
+.spec-type .d { font-family: var(--f-display); font-weight: 800; font-size: 30px; line-height: 1.1; color: var(--ink); }
+.spec-type .b { font-family: var(--f-body); font-size: 15px; }
+.spec-type .mn { font-family: var(--f-mono); font-size: 13px; }
+.spec-type small { font-family: var(--f-mono); font-size: 11px; color: var(--muted); display: block; }
+.vs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; font-size: 14px; }
+.vs div { padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.vs div:nth-child(odd) { border-right: 1px solid var(--line); color: var(--muted); }
+.vs .h { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); background: var(--bg); }
+.vs div:nth-last-child(-n+2) { border-bottom: 0; }
+
+/* Mockup stage */
+.mock-block { display: grid; gap: 16px; }
+.mock-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px 28px; font-size: 14px; color: var(--muted); margin: 0; padding: 0; list-style: none; }
+.mock-notes li { padding-left: 16px; position: relative; }
+.mock-notes li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 7px; background: var(--accent); border-radius: 1px; }
+.mock-notes b { color: var(--ink); font-weight: 600; }
+.stage { position: relative; width: 100%; overflow: hidden; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+.stage-inner { width: 1200px; transform-origin: top left; position: absolute; left: 0; top: 0; }
+.browser { background: #E6E4E0; display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+.browser i { width: 11px; height: 11px; border-radius: 50%; background: #C7C3BC; display: block; }
+.browser .url { flex: 1; background: #FFFFFF; border-radius: 5px; font-family: var(--f-mono); font-size: 12px; color: #666666; padding: 5px 12px; }
+
+/* === The proposed site (mockups) === */
+.m { background: var(--m-bg); color: var(--m-ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.m h1, .m h2, .m h3 { font-family: var(--f-display); color: var(--m-ink); letter-spacing: -.015em; }
+.m-top { background: var(--m-dark); color: #FFFFFF; font-size: 12.5px; display: flex; gap: 28px; padding: 7px 48px; }
+.m-top b { font-weight: 500; color: var(--m-gold-btn); }
+.m-nav { display: flex; align-items: center; gap: 30px; padding: 10px 48px; border-bottom: 1px solid var(--m-line); }
+.m-logo { width: 76px; height: 52px; object-fit: cover; display: block; }
+.m-links { display: flex; gap: 24px; font-weight: 500; font-size: 14px; flex: 1; color: #444444; }
+.m-links span.on { color: var(--m-gold-dark); box-shadow: inset 0 -2px 0 var(--m-gold); padding-bottom: 4px; }
+.m-btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-display); font-weight: 700; font-size: 13.5px; padding: 11px 18px; border-radius: 8px; white-space: nowrap; border: 1.5px solid transparent; }
+.m-btn.gold { background: var(--m-gold-btn); color: #1F1D1A; }
+.m-btn.dark { background: var(--m-dark); color: #FFFFFF; }
+.m-btn.line { border-color: var(--m-line); color: var(--m-ink); background: #FFFFFF; }
+.m-btn.wa { border-color: var(--m-wa); color: var(--m-wa); background: #FFFFFF; }
+.m-btn.big { padding: 15px 24px; font-size: 15px; }
+.wa-ico { width: 16px; height: 16px; display: inline-block; }
+
+.m-hero { display: grid; grid-template-columns: 5fr 7fr; }
+.m-hero-tx { padding: 56px 40px 44px 48px; display: grid; gap: 20px; align-content: center; }
+.m-kicker { font-family: var(--f-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--m-gold-dark); }
+.m-hero h1 { font-size: 48px; line-height: 1.05; font-weight: 800; }
+.m-hero h1 em { font-style: normal; color: var(--m-gold); }
+.m-hero p { font-size: 16.5px; color: var(--m-mute); max-width: 44ch; }
+.m-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.m-hero-img { position: relative; height: 500px; }
+.m-hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.m-plate { position: absolute; left: 24px; bottom: 24px; background: #FFFFFF; border-radius: 6px; display: grid; grid-template-columns: auto auto; box-shadow: 0 8px 28px rgba(0,0,0,.22); overflow: hidden; }
+.m-plate .l { background: var(--m-gold-btn); color: #1F1D1A; padding: 12px 14px; font-family: var(--f-mono); font-size: 11px; font-weight: 500; display: grid; place-content: center; text-align: center; line-height: 1.3; }
+.m-plate .r { padding: 10px 16px; display: grid; gap: 2px; }
+.m-plate .r b { font-family: var(--f-display); font-size: 18px; font-weight: 800; line-height: 1.1; }
+.m-plate .r span { font-family: var(--f-mono); font-size: 12px; color: var(--m-mute); }
+
+.m-stats { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid var(--m-line); }
+.m-stats div { padding: 18px 48px; border-right: 1px solid var(--m-line); display: grid; gap: 2px; }
+.m-stats div:last-child { border-right: 0; }
+.m-stats b { font-family: var(--f-display); font-size: 28px; font-weight: 800; line-height: 1.1; color: var(--m-gold-dark); font-variant-numeric: tabular-nums; }
+.m-stats span { font-size: 13px; color: var(--m-mute); }
+
+.m-brands { display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; font-family: var(--f-display); font-weight: 700; font-size: 14px; letter-spacing: .1em; color: #9A968E; text-transform: uppercase; }
+
+.m-sec { padding: 52px 48px; display: grid; gap: 24px; }
+.m-sec-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; }
+.m-sec-head h2 { font-size: 30px; font-weight: 800; line-height: 1.1; }
+.m-sec-head a { font-weight: 700; color: var(--m-gold-dark); text-decoration: none; font-size: 14px; font-family: var(--f-display); }
+
+.m-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.m-cards.three { grid-template-columns: repeat(3, 1fr); }
+.m-car { border: 1px solid var(--m-line); border-radius: 8px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; background: #FFFFFF; }
+.m-car .im { aspect-ratio: 4/3; position: relative; background: var(--m-soft); }
+.m-car .im img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.m-tag { position: absolute; left: 10px; top: 10px; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; background: #FFFFFF; color: var(--m-ink); font-weight: 500; }
+.m-car .bd { padding: 14px 16px 16px; display: grid; gap: 8px; align-content: space-between; }
+.m-car .br { font-family: var(--f-mono); font-size: 11px; color: var(--m-mute); text-transform: uppercase; letter-spacing: .05em; }
+.m-car h3 { font-size: 18px; font-weight: 700; line-height: 1.15; }
+.m-price { font-family: var(--f-display); font-weight: 800; font-size: 17px; color: var(--m-gold-dark); font-variant-numeric: tabular-nums; }
+.m-price.na { color: var(--m-mute); font-weight: 600; font-size: 14px; }
+.m-specs { font-family: var(--f-mono); font-size: 11.5px; color: var(--m-mute); border-top: 1px solid var(--m-line); padding-top: 9px; }
+.m-car .act { display: flex; gap: 8px; }
+.m-car .act .m-btn { padding: 8px 12px; font-size: 12.5px; }
+
+.m-steps { background: var(--m-soft); }
+.m-steps ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); counter-reset: s; }
+.m-steps li { counter-increment: s; padding: 0 26px 0 0; display: grid; gap: 8px; align-content: start; }
+.m-steps li::before { content: counter(s, decimal-leading-zero); font-family: var(--f-display); font-weight: 800; font-size: 34px; color: var(--m-gold); line-height: 1; border-bottom: 2px solid var(--m-gold); padding-bottom: 10px; }
+.m-steps li b { font-size: 15.5px; font-family: var(--f-display); }
+.m-steps li span { font-size: 14px; color: var(--m-mute); }
+
+.m-contact { background: var(--m-dark); color: #FFFFFF; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; padding: 52px 48px; }
+.m-contact h2 { color: #FFFFFF; font-size: 32px; line-height: 1.1; }
+.m-contact p { color: #CFCAC0; }
+.m-addr { display: grid; gap: 12px; font-size: 15px; align-content: start; }
+.m-addr div { display: grid; grid-template-columns: 110px 1fr; gap: 8px; border-top: 1px solid rgba(255,255,255,.18); padding-top: 10px; }
+.m-addr div span { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--m-gold-btn); padding-top: 3px; }
+.m-form { background: #FFFFFF; color: var(--m-ink); border-radius: 8px; padding: 24px; display: grid; gap: 12px; }
+.m-form b { font-family: var(--f-display); font-size: 19px; font-weight: 800; }
+.m-field { display: grid; gap: 4px; }
+.m-field label { font-size: 12.5px; font-weight: 500; }
+.m-field div { border: 1px solid var(--m-line); border-radius: 6px; padding: 10px 12px; font-size: 14px; color: #999999; }
+.m-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.m-foot { padding: 20px 48px; display: flex; justify-content: space-between; font-size: 12.5px; color: var(--m-mute); border-top: 1px solid var(--m-line); }
+
+/* Catalogue mockup */
+.m-cat-head { padding: 30px 48px 20px; display: grid; gap: 16px; border-bottom: 1px solid var(--m-line); }
+.m-crumb { font-family: var(--f-mono); font-size: 12px; color: var(--m-mute); }
+.m-cat-head h1 { font-size: 36px; font-weight: 800; line-height: 1.1; display: flex; align-items: baseline; gap: 16px; }
+.m-cat-head h1 small { font-family: var(--f-mono); font-size: 14px; font-weight: 400; color: var(--m-mute); letter-spacing: 0; }
+.m-chips { display: flex; gap: 8px; align-items: center; }
+.m-chip { font-family: var(--f-body); font-size: 13.5px; font-weight: 500; padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--m-line); background: #FFFFFF; color: var(--m-ink); cursor: pointer; }
+.m-chip[aria-pressed="true"] { background: var(--m-gold-btn); border-color: var(--m-gold-btn); color: #1F1D1A; }
+.m-chip:hover { border-color: var(--m-gold); }
+.m-search { margin-left: auto; border: 1px solid var(--m-line); border-radius: 6px; padding: 9px 14px; width: 300px; font-size: 14px; color: #999999; }
+.m-cat { display: grid; grid-template-columns: 250px 1fr; }
+.m-filters { border-right: 1px solid var(--m-line); padding: 24px 28px 24px 48px; display: grid; gap: 24px; align-content: start; }
+.m-fgroup { display: grid; gap: 8px; }
+.m-fgroup h4 { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--m-mute); font-weight: 500; margin: 0 0 2px; }
+.m-check { display: flex; align-items: center; gap: 9px; font-size: 14px; }
+.m-check i { width: 15px; height: 15px; border: 1.5px solid #B5B1A9; border-radius: 3px; display: inline-block; flex: none; }
+.m-check i.on { background: var(--m-gold); border-color: var(--m-gold); box-shadow: inset 0 0 0 2.5px #FFFFFF; }
+.m-check em { font-style: normal; margin-left: auto; font-family: var(--f-mono); font-size: 12px; color: var(--m-mute); }
+.m-results { padding: 24px 48px 40px 32px; display: grid; gap: 18px; align-content: start; }
+.m-rbar { display: flex; justify-content: space-between; font-size: 14px; color: var(--m-mute); }
+.m-rbar b { color: var(--m-ink); font-weight: 500; }
+.m-car[hidden] { display: none !important; }
+.m-noimg { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; font-family: var(--f-mono); font-size: 12px; color: var(--m-mute); background: repeating-linear-gradient(135deg, var(--m-soft) 0 10px, #ECEAE5 10px 20px); line-height: 1.5; }
+
+/* Fiche mockup */
+.m-fiche { display: grid; grid-template-columns: 7fr 5fr; gap: 40px; padding: 22px 48px 44px; }
+.m-gal { display: grid; gap: 10px; align-content: start; }
+.m-gal .main { aspect-ratio: 1020/587; border-radius: 8px; overflow: hidden; }
+.m-gal .main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.m-thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.m-thumbs div { aspect-ratio: 4/3; border-radius: 6px; overflow: hidden; position: relative; }
+.m-thumbs div.on { outline: 2px solid var(--m-gold); outline-offset: 2px; }
+.m-thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.m-thumbs .m-noimg { font-size: 10px; padding: 4px; }
+.m-more { position: absolute; inset: 0; display: grid; place-content: center; background: rgba(31,29,26,.62); color: #FFFFFF; font-family: var(--f-display); font-weight: 800; font-size: 18px; }
+.m-info { display: grid; gap: 16px; align-content: start; }
+.m-info h1 { font-size: 34px; font-weight: 800; line-height: 1.08; }
+.m-info .sub { font-size: 16px; color: var(--m-mute); }
+.m-big-price { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 8px; background: var(--m-soft); }
+.m-big-price b { font-family: var(--f-display); font-size: 28px; font-weight: 800; color: var(--m-gold-dark); font-variant-numeric: tabular-nums; }
+.m-big-price span { font-size: 13px; color: var(--m-mute); text-align: right; }
+.m-spec-t { border-top: 2px solid var(--m-ink); }
+.m-spec-t div { display: grid; grid-template-columns: 160px 1fr; padding: 8px 0; border-bottom: 1px solid var(--m-line); font-size: 14px; }
+.m-spec-t div span { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--m-mute); padding-top: 2px; }
+.m-spec-t div b { font-family: var(--f-mono); font-weight: 500; font-variant-numeric: tabular-nums; font-size: 13.5px; }
+.m-stack { display: grid; gap: 10px; }
+.m-stack .m-btn { justify-content: center; }
+.m-bubble { background: #E7F6EC; border-radius: 8px 8px 8px 2px; padding: 10px 12px; font-size: 13px; color: #1B3A26; max-width: 92%; }
+.m-bubble small { display: block; font-family: var(--f-mono); font-size: 10.5px; color: #4D7A5C; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .05em; }
+.m-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--m-line); margin: 0 48px; font-family: var(--f-display); font-weight: 600; font-size: 14px; }
+.m-tabs span { padding: 12px 18px; color: var(--m-mute); }
+.m-tabs span.on { color: var(--m-ink); box-shadow: inset 0 -2px 0 var(--m-gold); }
+.m-feat { padding: 24px 48px 48px; display: grid; grid-template-columns: 7fr 5fr; gap: 40px; }
+.m-feat ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+.m-feat li { border-bottom: 1px solid var(--m-line); padding: 9px 0; font-size: 14px; }
+.m-feat h2 { font-size: 20px; margin-bottom: 8px; }
+
+/* Phones */
+.phones { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; padding: 28px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.phone-wrap { display: grid; gap: 10px; justify-items: center; }
+.phone-wrap > span { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.phone { width: 340px; max-width: 100%; height: 690px; border-radius: 34px; border: 10px solid #1C1B18; overflow: hidden; position: relative; background: var(--m-bg); }
+.phone .m { height: 100%; overflow: hidden; position: relative; font-size: 14px; }
+.p-nav { display: flex; align-items: center; justify-content: space-between; padding: 6px 14px; border-bottom: 1px solid var(--m-line); }
+.p-nav .m-logo { width: 60px; height: 42px; }
+.p-burger { width: 22px; height: 14px; border-block: 2px solid var(--m-ink); position: relative; }
+.p-burger::after { content: ""; position: absolute; left: 0; right: 0; top: 4px; border-top: 2px solid var(--m-ink); }
+.p-hero-img { height: 190px; }
+.p-hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.p-pad { padding: 16px; display: grid; gap: 12px; }
+.p-pad h1 { font-size: 27px; line-height: 1.08; font-weight: 800; }
+.p-pad h1 em { font-style: normal; color: var(--m-gold); }
+.p-pad p { color: var(--m-mute); font-size: 14px; }
+.p-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; border-block: 1px solid var(--m-line); }
+.p-stats div { padding: 10px 12px; border-right: 1px solid var(--m-line); display: grid; }
+.p-stats div:last-child { border-right: 0; }
+.p-stats b { font-family: var(--f-display); font-size: 20px; font-weight: 800; color: var(--m-gold-dark); line-height: 1.15; }
+.p-stats span { font-size: 11.5px; color: var(--m-mute); }
+.p-bar { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr 1.3fr; background: #FFFFFF; border-top: 1px solid var(--m-line); box-shadow: 0 -6px 20px rgba(0,0,0,.08); }
+.p-bar div { padding: 10px 6px 14px; text-align: center; font-size: 12px; font-weight: 700; display: grid; gap: 2px; justify-items: center; font-family: var(--f-display); }
+.p-bar div + div { border-left: 1px solid var(--m-line); }
+.p-bar .wa { color: var(--m-wa); }
+.p-bar .dv { background: var(--m-gold-btn); color: #1F1D1A; }
+.p-bar svg { width: 18px; height: 18px; }
+.p-fiche-img { aspect-ratio: 1020/587; }
+.p-fiche-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.p-dots { display: flex; gap: 5px; justify-content: center; padding-top: 8px; }
+.p-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--m-line); }
+.p-dots i:first-child { background: var(--m-gold); width: 16px; border-radius: 3px; }
+.p-fiche h1 { font-size: 24px; line-height: 1.1; }
+.p-fiche .m-spec-t div { grid-template-columns: 112px 1fr; font-size: 13px; padding: 7px 0; }
+.p-fiche .m-big-price { padding: 10px 12px; }
+.p-fiche .m-big-price b { font-size: 21px; }
+
+/* Plan */
+.phases { display: grid; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); overflow: hidden; }
+.phase { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1.15fr) 110px; gap: 24px; padding: 22px 24px; border-bottom: 1px solid var(--line); align-items: start; }
+.phase:last-of-type { border-bottom: 0; }
+.phase .n { font-family: var(--f-display); font-weight: 800; font-size: 36px; line-height: 1; color: var(--accent); }
+.phase h4 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.phase p { font-size: 14.5px; color: var(--muted); }
+.phase ul { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 4px; }
+.phase .dur { font-family: var(--f-mono); font-size: 13px; text-align: right; display: grid; gap: 4px; justify-items: end; }
+.phase .dur b { font-family: var(--f-display); font-size: 22px; font-weight: 800; }
+.total { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 16px 24px; background: var(--accent-soft); color: var(--ink); font-size: 15px; border-top: 1px solid var(--line); }
+.total b { font-family: var(--f-display); font-size: 22px; font-weight: 800; color: var(--accent); }
+
+.tests { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+
+.decisions { display: grid; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); overflow: hidden; }
+.dec { display: grid; grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr); gap: 20px; padding: 18px 22px; border-bottom: 1px solid var(--line); align-items: start; }
+.dec:last-child { border-bottom: 0; }
+.dec .id { font-family: var(--f-mono); font-weight: 500; color: var(--accent); font-size: 15px; }
+.dec b { display: block; font-size: 15.5px; margin-bottom: 2px; }
+.dec p { font-size: 14px; color: var(--muted); }
+.dec .reco { font-size: 14px; border-left: 2px solid var(--ok); padding-left: 12px; }
+.dec .reco span { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ok); display: block; }
+.dec.done { background: var(--ok-soft); }
+
+.doc-foot { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+@media (max-width: 760px) {
+  .phase { grid-template-columns: 1fr; gap: 10px; }
+  .phase .dur { justify-items: start; text-align: left; }
+  .dec { grid-template-columns: 1fr; gap: 8px; }
+  .swatches { grid-template-columns: repeat(2, 1fr); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .m-chip, .toc a { transition: background-color .15s, color .15s, border-color .15s; }
+}
+</style>
+
+<div class="wrap">
+
+<header class="doc-head">
+  <div class="eyebrow"><span>Proposition de refonte · v2</span><span>21 octobre 2026</span><span>topcarzone.com</span><span class="pill wait">À valider</span></div>
+  <h1>Refonte du site <span>CARZONE</span></h1>
+  <p class="lead">Cette version part du site en ligne topcarzone.com, construit avec Webador, et non plus seulement du projet Next.js. La charte du client est conservée telle quelle : fond blanc, or CARZONE, polices Montserrat et Roboto, logo bleu et rouge. La refonte change la structure, le catalogue et les parcours, pas les couleurs.</p>
+  <nav class="toc" aria-label="Sommaire">
+    <a href="#existant">Le site en ligne</a>
+    <a href="#diagnostic">Diagnostic</a>
+    <a href="#direction">Charte conservée</a>
+    <a href="#maquettes">Maquettes</a>
+    <a href="#plan">Plan d'implémentation</a>
+    <a href="#tests">Tests</a>
+    <a href="#decisions">Décisions à valider</a>
+  </nav>
+</header>
+
+<!-- EXISTANT -->
+<section class="doc" id="existant">
+  <div class="sec-head">
+    <span class="k">Relevé sur topcarzone.com le 21 octobre 2026</span>
+    <h2>Ce que fait le site en ligne</h2>
+    <p>Le site actuel est un catalogue détaillé. Chaque modèle a sa fiche avec ses performances, ses équipements, ses dimensions, sa garantie et, pour près de la moitié des fiches, son prix en F CFA. C'est ce contenu qu'il faut reprendre, pas les 26 véhicules du projet Next.js, qui ne correspondent pas à ce qui est réellement vendu.</p>
+  </div>
+  <div class="facts">
+    <div><b>64</b><span>fiches modèles dans le menu « Nos marques de voitures »</span></div>
+    <div><b>11</b><span>marques : BAIC, ARCFOX, BYD, Changan, Exeed, Forthing, Geely, Jetour, Kaiyi, Toyota, Wuling</span></div>
+    <div><b>10 – 55 M</b><span>F CFA : prix affichés sur 28 fiches, du Changan Q05 au BYD Leopard 8</span></div>
+    <div><b>3 ans</b><span>ou 100 000 km : garantie indiquée sur chaque fiche</span></div>
+  </div>
+  <div class="findings">
+    <table>
+      <thead><tr><th>Élément</th><th>Ce qui existe aujourd'hui</th><th>Ce qu'on en fait</th></tr></thead>
+      <tbody>
+        <tr><td><b>Menu</b></td><td>Home, Qui sommes-nous ?, Nos marques de voitures (menu déroulant de 64 fiches), Nos services, Témoignages clients, Contactez-nous, panier</td><td>On garde les intitulés. Le menu déroulant est remplacé par une page catalogue avec filtres.</td></tr>
+        <tr><td><b>Adresse</b></td><td>Bâtiment de la Commission Béninoise des Droits de l'Homme, St Michel Kétékété, Cotonou · +229 01 92 62 62 62 · contact@topcarzone.com</td><td>Affichée en haut de chaque page et dans les données Google.</td></tr>
+        <tr><td><b>Services</b></td><td>Vente neuf et occasion, commande sur mesure (couleurs, options), pièces de rechange, maintenance, location</td><td>Une page par service, avec un bouton de contact adapté.</td></tr>
+        <tr><td><b>Réseaux</b></td><td>Instagram, LinkedIn, TikTok, WhatsApp</td><td>Conservés dans le pied de page.</td></tr>
+        <tr><td><b>Adresses des pages</b></td><td><code>/nos-marques-de-voitures/jetour-2026/t-2-i-dm-2026</code></td><td>Conservées à l'identique pour ne pas perdre le référencement Google.</td></tr>
+        <tr><td><b>Catalogue PDF</b></td><td>« Carzone Catalog 2025 », 11,5 Mo, 416 téléchargements</td><td>Conservé, mais plus mis en avant que les fiches en ligne.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- DIAGNOSTIC -->
+<section class="doc" id="diagnostic">
+  <div class="sec-head">
+    <span class="k">Site en ligne et projet Next.js</span>
+    <h2>Diagnostic</h2>
+    <p>Les problèmes visibles par les clients, sur les deux sites.</p>
+  </div>
+
+  <div class="proofs">
+    <figure class="proof">
+      <div class="quote"><span>« I can't say enough about the outstanding service I received from your company. Their team went above and beyond… »</span><b>Eva Green · Janice Smith · Evelyn Harris</b></div>
+      <figcaption class="tx"><b>Témoignages du modèle Webador encore en ligne</b><p>La page « Témoignages clients » affiche trois fois le même texte de démonstration, en anglais, sous des noms inventés. Le site Next.js a traduit des avis similaires en français.</p></figcaption>
+    </figure>
+    <figure class="proof">
+      <div class="ph"><img src="img/placeholder.jpg" alt="Mercedes-AMG GT noire sur un quai à Monaco"><span class="tag">Next.js · cars/byd-seal.jpg</span></div>
+      <figcaption class="tx"><b>Projet Next.js : 18 photos sur 21 identiques</b><p>Elles montrent toutes cette Mercedes à Monaco, y compris sur la carte « BYD Seal ». Le catalogue Next.js (ZEEKR, Hongqi, Tank…) n'est pas non plus celui du site en ligne.</p></figcaption>
+    </figure>
+    <figure class="proof">
+      <div class="ph"><img src="img/showroom-ia.jpg" alt="Image générée montrant deux personnes devant une enseigne WECOM"><span class="tag">acceuil / welcom.png</span></div>
+      <figcaption class="tx"><b>Image de showroom générée par IA, sur les deux sites</b><p>L'enseigne affiche « WECOM ». À remplacer par une vraie photo du showroom de St Michel.</p></figcaption>
+    </figure>
+  </div>
+
+  <div class="findings">
+    <table>
+      <thead><tr><th>Gravité</th><th>Constat</th><th>Où</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pill crit">Critique</span></td><td>Le texte des boutons et du menu est blanc sur fond jaune (<code>#FFB400</code>) : le contraste n'est que de 1,9 pour 4,5 requis, donc illisible en plein soleil sur un téléphone. Le jaune est conservé, le texte passe en noir.</td><td>Site en ligne</td></tr>
+        <tr><td><span class="pill crit">Critique</span></td><td>Sur mobile, les fiches modèles laissent de grands blancs et la page défile horizontalement.</td><td>Site en ligne</td></tr>
+        <tr><td><span class="pill imp">Important</span></td><td>36 fiches n'ont pas de prix et plusieurs sont vides (Changan CS75, Exeed RX 400, Jetour X70 Plus…). Changan CS75 Plus « Smart Champion » apparaît deux fois.</td><td>Site en ligne</td></tr>
+        <tr><td><span class="pill imp">Important</span></td><td>Le texte du service « Location de voitures » est un copier-coller de celui de « Maintenance ». La page « Nos services » commence par un texte générique du modèle (« C'est ici que notre voyage commence »).</td><td>Site en ligne</td></tr>
+        <tr><td><span class="pill imp">Important</span></td><td>Aucun filtre ni aucune recherche : trouver un SUV 7 places à moins de 20 M oblige à ouvrir les fiches une par une depuis le menu.</td><td>Site en ligne</td></tr>
+        <tr><td><span class="pill imp">Important</span></td><td>Le projet Next.js est passé au noir et or et a retiré tous les prix, contre la charte et le contenu du site actuel.</td><td>Next.js</td></tr>
+        <tr><td><span class="pill min">Mineur</span></td><td>Des emojis 🔹 servent de puces, il y a des fautes (« Cherry JETOUR », « meilleur cout ») et des boutons en anglais (« Read more », « Contact us »).</td><td>Site en ligne</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- DIRECTION -->
+<section class="doc" id="direction">
+  <div class="sec-head">
+    <span class="k">Les couleurs du client ne changent pas</span>
+    <h2>Charte conservée</h2>
+    <p>Toutes les couleurs ci-dessous viennent du site en ligne. Seul l'usage change : le jaune reste la couleur des boutons, mais avec un texte foncé pour qu'il soit lisible, et l'or foncé du site sert aux titres et aux prix.</p>
+  </div>
+
+  <div class="dir-grid">
+    <div class="card">
+      <h4>Couleurs relevées sur topcarzone.com</h4>
+      <div class="swatches">
+        <div class="sw"><i style="background:var(--m-gold)"></i><b>Or CARZONE</b><span>#CC9000 · menu actif, accents</span></div>
+        <div class="sw"><i style="background:var(--m-gold-btn)"></i><b>Jaune boutons</b><span>#FFB400 · boutons</span></div>
+        <div class="sw"><i style="background:var(--m-gold-dark)"></i><b>Or foncé</b><span>#996C00 · titres, prix</span></div>
+        <div class="sw"><i style="background:#737373"></i><b>Gris texte</b><span>#737373 → #666666</span></div>
+        <div class="sw"><i style="background:#FFFFFF"></i><b>Blanc</b><span>#FFFFFF · fond</span></div>
+        <div class="sw"><i style="background:var(--m-dark)"></i><b>Noir chaud</b><span>#1F1D1A · ajout : bandeau, contact</span></div>
+      </div>
+      <div class="contrast">
+        <div style="background:#FFB400;color:#FFFFFF"><small>Aujourd'hui · 1,9:1</small>Envoyer le formulaire</div>
+        <div style="background:#FFB400;color:#1F1D1A"><small>Proposé · 10,6:1</small>Envoyer le formulaire</div>
+      </div>
+      <p>Le gris du texte passe de <code>#737373</code> à <code>#666666</code> pour atteindre le contraste minimum. La différence est à peine visible.</p>
+    </div>
+    <div class="card">
+      <h4>Typographie du site</h4>
+      <div class="spec-type">
+        <div><small>Titres · Montserrat (déjà utilisée)</small><span class="d">Jetour T2 i-DM 2026</span></div>
+        <div><small>Texte · Roboto (déjà utilisée)</small><span class="b">L'aventure passe à l'hybride rechargeable. Garantie 3 ans ou 100 000 km.</span></div>
+        <div><small>Caractéristiques · IBM Plex Mono (ajout proposé)</small><span class="mn">375 ch · 610 Nm · 0–100 en 7,5 s · 5 places</span></div>
+      </div>
+      <p>Le seul ajout est une police à chasse fixe pour les tableaux de caractéristiques, qui deviennent plus faciles à comparer. Elle est facultative (décision D3).</p>
+    </div>
+    <div class="card">
+      <h4>Le ton : leurs mots, mieux rangés</h4>
+      <div class="vs">
+        <div class="h">Aujourd'hui</div><div class="h">Proposé</div>
+        <div>Read more</div><div>Voir la fiche et le prix</div>
+        <div>Contact us</div><div>Demander un devis</div>
+        <div>🔹 1. Une première impression soignée</div><div>Étapes numérotées, sans emoji</div>
+        <div>Cherry JETOUR</div><div>Jetour</div>
+      </div>
+      <p>Les slogans du client sont conservés : « La maison des voitures chinoises et multi-marques au Bénin » et « Drive your dream ».</p>
+    </div>
+  </div>
+</section>
+
+<!-- MAQUETTES -->
+<section class="doc" id="maquettes">
+  <div class="sec-head">
+    <span class="k">Charte du client et données réelles</span>
+    <h2>Maquettes</h2>
+    <p>Les prix, les caractéristiques et les adresses viennent du site en ligne. Les photos viennent des fiches de topcarzone.com, récupérées le 21 octobre 2026 et réduites à moins de 80 Ko chacune.</p>
+  </div>
+
+  <!-- A. ACCUEIL -->
+  <div class="mock-block">
+    <h3 class="sub">A · Accueil <small>desktop 1200 px · /</small></h3>
+    <div class="stage" data-w="1200"><div class="stage-inner">
+      <div class="browser"><i></i><i></i><i></i><div class="url">topcarzone.com</div></div>
+      <div class="m">
+        <div class="m-top"><span><b>Showroom</b> St Michel Kétékété, Cotonou</span><span><b>Tél. / WhatsApp</b> +229 01 92 62 62 62</span><span><b>E-mail</b> contact@topcarzone.com</span></div>
+        <div class="m-nav">
+          <img class="m-logo" src="img/logo.png" alt="CARZONE">
+          <div class="m-links"><span class="on">Accueil</span><span>Nos marques</span><span>Nos services</span><span>Qui sommes-nous ?</span><span>Témoignages</span><span>Contact</span></div>
+          <span class="m-btn wa"><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>WhatsApp</span>
+          <span class="m-btn gold">Demander un devis</span>
+        </div>
+        <div class="m-hero">
+          <div class="m-hero-tx">
+            <span class="m-kicker">CARZONE · Drive your dream</span>
+            <h1>La maison des voitures <em>chinoises et multi-marques</em> au Bénin.</h1>
+            <p>BAIC, BYD, Changan, Jetour, Forthing… 64 modèles 2026 de 10 à 55 millions F CFA, de l'importation à la livraison clé en main. Garantie 3 ans ou 100 000 km.</p>
+            <div class="m-cta"><span class="m-btn gold big">Voir les 64 modèles</span><span class="m-btn wa big"><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>+229 01 92 62 62 62</span></div>
+          </div>
+          <div class="m-hero-img">
+            <img src="img/jetour-t2.jpg" alt="Jetour T2 traversant une rivière">
+            <div class="m-plate"><div class="l">NOU-<br>VEAU<br>2026</div><div class="r"><b>Jetour T2 i-DM</b><span>Hybride rechargeable · 375 ch · 26 000 000 F CFA</span></div></div>
+          </div>
+        </div>
+        <div class="m-stats">
+          <div><b>64</b><span>modèles au catalogue</span></div>
+          <div><b>11</b><span>marques représentées</span></div>
+          <div><b>10 M F CFA</b><span>premier prix (Changan Q05)</span></div>
+          <div><b>3 ans</b><span>ou 100 000 km de garantie</span></div>
+        </div>
+        <div class="m-brands"><span>BAIC</span><span>ARCFOX</span><span>BYD</span><span>Changan</span><span>Deepal</span><span>Exeed</span><span>Forthing</span><span>Geely</span><span>Jetour</span><span>Kaiyi</span><span>Toyota</span><span>Wuling</span></div>
+        <div class="m-sec">
+          <div class="m-sec-head"><h2>Nouveautés 2026</h2><a>Tout le catalogue →</a></div>
+          <div class="m-cards">
+            <div class="m-car"><div class="im"><img src="img/jetour-t2-1.jpg" alt="Jetour T2 i-DM"><span class="m-tag">Hybride rechargeable</span></div><div class="bd"><span class="br">Jetour · SUV 5 places</span><h3>T2 i-DM 2026</h3><span class="m-price">26 000 000 F CFA</span><div class="m-specs">375 ch · 0–100 en 7,5 s</div></div></div>
+            <div class="m-car"><div class="im"><img src="img/byd-leopard-8.jpg" alt="BYD Leopard 8"><span class="m-tag">Hybride rechargeable</span></div><div class="bd"><span class="br">BYD · SUV 6 places</span><h3>Leopard 8</h3><span class="m-price">55 000 000 F CFA</span><div class="m-specs">550 kW · 760 Nm</div></div></div>
+            <div class="m-car"><div class="im"><img src="img/deepal-s09.jpg" alt="Deepal S09"><span class="m-tag">Électrique / REEV</span></div><div class="bd"><span class="br">Changan · Deepal</span><h3>Deepal S09</h3><span class="m-price">24 000 000 F CFA</span><div class="m-specs">Fiche à compléter</div></div></div>
+            <div class="m-car"><div class="im"><img src="img/uni-z.jpg" alt="Changan UNI-Z"><span class="m-tag">Hybride</span></div><div class="bd"><span class="br">Changan · SUV</span><h3>UNI-Z 2026</h3><span class="m-price na">Prix sur demande</span><div class="m-specs">Fiche à compléter</div></div></div>
+          </div>
+        </div>
+        <div class="m-sec m-steps">
+          <div class="m-sec-head"><h2>Votre voiture, de la commande à la remise des clés</h2></div>
+          <ol>
+            <li><b>Accueil et conseil</b><span>Au showroom ou sur WhatsApp : budget, usage, essai sur route.</span></li>
+            <li><b>Commande sur mesure</b><span>Couleurs intérieures et extérieures, options, financement.</span></li>
+            <li><b>Importation</b><span>Homologation, transport et dédouanement pris en charge.</span></li>
+            <li><b>Livraison clé en main</b><span>Immatriculation, présentation du véhicule et suivi d'entretien.</span></li>
+          </ol>
+        </div>
+        <div class="m-contact">
+          <div class="m-addr">
+            <h2>Passez au showroom ou écrivez-nous</h2>
+            <p>Réponse sur WhatsApp pendant les heures d'ouverture.</p>
+            <div><span>Adresse</span>Bâtiment de la Commission Béninoise des Droits de l'Homme, St Michel Kétékété, Cotonou</div>
+            <div><span>WhatsApp</span>+229 01 92 62 62 62</div>
+            <div><span>E-mail</span>contact@topcarzone.com</div>
+          </div>
+          <div class="m-form">
+            <b>Demande de devis</b>
+            <div class="m-row"><div class="m-field"><label>Nom</label><div>Votre nom</div></div><div class="m-field"><label>Numéro WhatsApp</label><div>+229 …</div></div></div>
+            <div class="m-field"><label>Modèle souhaité</label><div>Choisir parmi les 64 modèles ▾</div></div>
+            <div class="m-field"><label>Message (facultatif)</label><div>Couleur, options, reprise, financement…</div></div>
+            <span class="m-btn gold" style="justify-content:center">Envoyer la demande</span>
+          </div>
+        </div>
+        <div class="m-foot"><span>© 2026 CARZONE Bénin</span><span>Instagram · LinkedIn · TikTok · WhatsApp</span><span>Mentions légales · Données personnelles</span></div>
+      </div>
+    </div></div>
+    <ul class="mock-notes">
+      <li><b>Fond blanc, or et Montserrat</b> : on reconnaît le site actuel, mais en mieux rangé.</li>
+      <li><b>Les chiffres sont réels</b> et calculés à partir du catalogue : 64 modèles, prix de départ, garantie.</li>
+      <li><b>Les 5 étapes de la page d'accueil actuelle</b> deviennent un parcours en 4 étapes, sans emojis.</li>
+      <li><b>Le formulaire reprend le champ « Numéro WhatsApp »</b> du site actuel et y ajoute le choix du modèle.</li>
+    </ul>
+  </div>
+
+  <!-- B. CATALOGUE -->
+  <div class="mock-block">
+    <h3 class="sub">B · Catalogue <small>desktop · /nos-marques-de-voitures · les filtres de budget sont cliquables</small></h3>
+    <div class="stage" data-w="1200"><div class="stage-inner">
+      <div class="browser"><i></i><i></i><i></i><div class="url">topcarzone.com/nos-marques-de-voitures?budget=15-25</div></div>
+      <div class="m">
+        <div class="m-nav">
+          <img class="m-logo" src="img/logo.png" alt="CARZONE">
+          <div class="m-links"><span>Accueil</span><span class="on">Nos marques</span><span>Nos services</span><span>Qui sommes-nous ?</span><span>Témoignages</span><span>Contact</span></div>
+          <span class="m-btn wa">WhatsApp</span><span class="m-btn gold">Demander un devis</span>
+        </div>
+        <div class="m-cat-head">
+          <div class="m-crumb">Accueil / Nos marques de voitures</div>
+          <h1>Notre catalogue <small id="cat-count">6 modèles affichés sur 64</small></h1>
+          <div class="m-chips" role="group" aria-label="Budget">
+            <button type="button" class="m-chip" id="chip-all" data-f="all" aria-pressed="true">Tous · 64</button>
+            <button type="button" class="m-chip" id="chip-lo" data-f="lo" aria-pressed="false">Moins de 15 M · 12</button>
+            <button type="button" class="m-chip" id="chip-mid" data-f="mid" aria-pressed="false">15 à 25 M · 11</button>
+            <button type="button" class="m-chip" id="chip-hi" data-f="hi" aria-pressed="false">25 M et plus · 5</button>
+            <div class="m-search">Rechercher un modèle, une marque…</div>
+          </div>
+        </div>
+        <div class="m-cat">
+          <aside class="m-filters">
+            <div class="m-fgroup"><h4>Marque</h4>
+              <div class="m-check"><i></i>Changan / Deepal<em>18</em></div><div class="m-check"><i></i>BAIC<em>12</em></div><div class="m-check"><i></i>Forthing<em>11</em></div><div class="m-check"><i></i>Jetour<em>6</em></div><div class="m-check"><i></i>ARCFOX<em>5</em></div><div class="m-check"><i></i>BYD<em>4</em></div><div class="m-check"><i></i>Exeed · Geely · Kaiyi<em>6</em></div><div class="m-check"><i></i>Toyota · Wuling<em>2</em></div>
+            </div>
+            <div class="m-fgroup"><h4>Motorisation</h4>
+              <div class="m-check"><i></i>Thermique</div><div class="m-check"><i class="on"></i>Hybride / rechargeable</div><div class="m-check"><i></i>100 % électrique</div><div class="m-check"><i></i>Diesel</div>
+            </div>
+            <div class="m-fgroup"><h4>Type</h4>
+              <div class="m-check"><i></i>SUV</div><div class="m-check"><i></i>Berline</div><div class="m-check"><i></i>Monospace</div><div class="m-check"><i></i>Pick-up</div>
+            </div>
+            <div class="m-fgroup"><h4>Places</h4>
+              <div class="m-check"><i></i>5 places</div><div class="m-check"><i></i>6 – 7 places</div>
+            </div>
+          </aside>
+          <div class="m-results">
+            <div class="m-rbar"><span>Filtre actif : <b>Hybride / rechargeable</b> ✕</span><span>Trier : <b>Prix croissant</b> ▾</span></div>
+            <div class="m-cards three" id="cat-grid">
+              <div class="m-car" data-s="lo"><div class="im"><img src="img/baic-x55e.jpg" alt="BAIC X55e REHEV"><span class="m-tag">Hybride REHEV</span></div><div class="bd"><span class="br">BAIC · SUV</span><h3>X55e REHEV</h3><span class="m-price">15 000 000 F CFA</span><div class="act"><span class="m-btn line">Voir la fiche</span><span class="m-btn wa">WhatsApp</span></div></div></div>
+              <div class="m-car" data-s="mid"><div class="im"><img src="img/forthing-t5-hev.jpg" alt="Forthing T5 HEV"><span class="m-tag">Hybride HEV</span></div><div class="bd"><span class="br">Forthing · SUV</span><h3>T5 HEV</h3><span class="m-price">16 000 000 F CFA</span><div class="act"><span class="m-btn line">Voir la fiche</span><span class="m-btn wa">WhatsApp</span></div></div></div>
+              <div class="m-car" data-s="mid"><div class="im"><img src="img/byd-song-plus.jpg" alt="BYD Song Plus 2026"><span class="m-tag">Hybride rechargeable</span></div><div class="bd"><span class="br">BYD · SUV</span><h3>Song Plus 2026</h3><span class="m-price">18 000 000 F CFA</span><div class="act"><span class="m-btn line">Voir la fiche</span><span class="m-btn wa">WhatsApp</span></div></div></div>
+              <div class="m-car" data-s="mid"><div class="im"><img src="img/baic-b30e.jpg" alt="BAIC B30e"><span class="m-tag">Hybride</span></div><div class="bd"><span class="br">BAIC · SUV 5 places</span><h3>B30e Standard LV3</h3><span class="m-price">19 000 000 F CFA</span><div class="act"><span class="m-btn line">Voir la fiche</span><span class="m-btn wa">WhatsApp</span></div></div></div>
+              <div class="m-car" data-s="mid"><div class="im"><img src="img/forthing-v9.jpg" alt="Forthing V9 HEV"><span class="m-tag">Hybride HEV</span></div><div class="bd"><span class="br">Forthing · Monospace</span><h3>V9 HEV</h3><span class="m-price">25 000 000 F CFA</span><div class="act"><span class="m-btn line">Voir la fiche</span><span class="m-btn wa">WhatsApp</span></div></div></div>
+              <div class="m-car" data-s="hi"><div class="im"><img src="img/jetour-t2-1.jpg" alt="Jetour T2 i-DM"><span class="m-tag">Hybride rechargeable</span></div><div class="bd"><span class="br">Jetour · SUV 5 places</span><h3>T2 i-DM 2026</h3><span class="m-price">26 000 000 F CFA</span><div class="act"><span class="m-btn line">Voir la fiche</span><span class="m-btn wa">WhatsApp</span></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <ul class="mock-notes">
+      <li><b>Les filtres par budget sont possibles</b> parce que le site affiche déjà ses prix. Les fiches sans prix restent dans « Tous ».</li>
+      <li><b>Les filtres sont enregistrés dans l'URL</b> : une recherche peut être envoyée sur WhatsApp.</li>
+      <li><b>Le menu déroulant de 64 liens disparaît</b> au profit de cette page, plus simple à utiliser sur un téléphone.</li>
+      <li><b>Chaque carte a un bouton WhatsApp</b> avec un message qui contient déjà le nom du modèle.</li>
+    </ul>
+  </div>
+
+  <!-- C. FICHE -->
+  <div class="mock-block">
+    <h3 class="sub">C · Fiche modèle <small>desktop · même adresse qu'aujourd'hui</small></h3>
+    <div class="stage" data-w="1200"><div class="stage-inner">
+      <div class="browser"><i></i><i></i><i></i><div class="url">topcarzone.com/nos-marques-de-voitures/jetour-2026/t-2-i-dm-2026</div></div>
+      <div class="m">
+        <div class="m-nav">
+          <img class="m-logo" src="img/logo.png" alt="CARZONE">
+          <div class="m-links"><span>Accueil</span><span class="on">Nos marques</span><span>Nos services</span><span>Qui sommes-nous ?</span><span>Témoignages</span><span>Contact</span></div>
+          <span class="m-btn wa">WhatsApp</span><span class="m-btn gold">Demander un devis</span>
+        </div>
+        <div style="padding:18px 48px 0" class="m-crumb">Accueil / Nos marques / Jetour / T2 i-DM 2026</div>
+        <div class="m-fiche">
+          <div class="m-gal">
+            <div class="main"><img src="img/jetour-t2-1.jpg" alt="Jetour T2 i-DM 2026"></div>
+            <div class="m-thumbs">
+              <div class="on"><img src="img/jetour-t2-1.jpg" alt=""></div>
+              <div><img src="img/jetour-t2-2.jpg" alt=""></div>
+              <div><img src="img/jetour-t2-5.jpg" alt=""></div>
+              <div><img src="img/jetour-t2-6.jpg" alt=""></div>
+              <div><img src="img/jetour-t2-3.jpg" alt=""><span class="m-more">+9</span></div>
+            </div>
+          </div>
+          <div class="m-info">
+            <span class="m-kicker">Jetour · SUV 5 places · 2026</span>
+            <h1>Jetour T2 i-DM 2026</h1>
+            <p class="sub">L'aventure passe à l'hybride rechargeable.</p>
+            <div class="m-big-price"><b>26 000 000 F CFA</b><span>Garantie<br>3 ans ou 100 000 km</span></div>
+            <div class="m-spec-t">
+              <div><span>Puissance</span><b>360 – 375 ch combinés</b></div>
+              <div><span>Couple</span><b>610 Nm</b></div>
+              <div><span>0 – 100 km/h</span><b>7,5 – 8,5 s</b></div>
+              <div><span>Autonomie élec.</span><b>100 – 140 km</b></div>
+              <div><span>Garde au sol</span><b>205 mm · gué 700 mm</b></div>
+            </div>
+            <div class="m-stack">
+              <span class="m-btn gold big">Demander un devis pour ce modèle</span>
+              <span class="m-btn wa big"><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>Écrire sur WhatsApp</span>
+            </div>
+            <div class="m-bubble"><small>Message pré-rempli</small>Bonjour CARZONE, le Jetour T2 i-DM 2026 à 26 000 000 F CFA m'intéresse. Est-il disponible ?</div>
+          </div>
+        </div>
+        <div class="m-tabs"><span class="on">Équipements</span><span>Sécurité</span><span>Dimensions</span><span>Autonomie et recharge</span></div>
+        <div class="m-feat">
+          <div>
+            <ul><li>Écran central tactile 15,6 pouces</li><li>Caméra panoramique 360°</li><li>Système audio Sony, 12 haut-parleurs</li><li>Régulateur de vitesse adaptatif ACC</li><li>Toit panoramique 64 pouces</li><li>Prise V2L 3,3 kW pour appareils</li><li>Sièges avant électriques ventilés</li><li>Apple CarPlay et Android Auto</li></ul>
+          </div>
+          <div><h2>Dans la même gamme</h2>
+            <div class="m-cards" style="grid-template-columns:1fr 1fr;gap:12px">
+              <div class="m-car"><div class="im"><img src="img/jetour-dashing.jpg" alt="Jetour Dashing"></div><div class="bd" style="padding:10px 12px"><h3 style="font-size:15px">Jetour Dashing</h3><span class="m-price" style="font-size:14px">17 000 000 F CFA</span></div></div>
+              <div class="m-car"><div class="im"><img src="img/forthing-s7.jpg" alt="Forthing S7"></div><div class="bd" style="padding:10px 12px"><h3 style="font-size:15px">Forthing S7</h3><span class="m-price" style="font-size:14px">28 000 000 F CFA</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <ul class="mock-notes">
+      <li><b>Le texte détaillé des fiches actuelles est repris</b> et rangé en onglets au lieu d'une seule longue page.</li>
+      <li><b>Le prix et la garantie apparaissent dès le haut de la page</b>, et non plus tout en bas.</li>
+      <li><b>L'adresse de la page ne change pas</b> : Google et les liens déjà partagés continuent de fonctionner.</li>
+      <li><b>Le message WhatsApp contient le modèle et son prix</b>, le vendeur sait tout de suite de quoi il s'agit.</li>
+    </ul>
+  </div>
+
+  <!-- D. MOBILE -->
+  <div class="mock-block">
+    <h3 class="sub">D · Mobile <small>375 px · la majorité des visites</small></h3>
+    <div class="phones">
+      <div class="phone-wrap">
+        <div class="phone"><div class="m">
+          <div class="p-nav"><img class="m-logo" src="img/logo.png" alt="CARZONE"><div class="p-burger"></div></div>
+          <div class="p-hero-img"><img src="img/jetour-t2.jpg" alt="Jetour T2"></div>
+          <div class="p-pad">
+            <span class="m-kicker">Drive your dream · Cotonou</span>
+            <h1>La maison des voitures <em>chinoises</em> au Bénin.</h1>
+            <p>64 modèles 2026, de 10 à 55 millions F CFA. Garantie 3 ans ou 100 000 km.</p>
+          </div>
+          <div class="p-stats"><div><b>64</b><span>modèles</span></div><div><b>11</b><span>marques</span></div><div><b>3 ans</b><span>garantie</span></div></div>
+          <div class="p-pad" style="padding-top:14px"><span class="m-btn gold" style="justify-content:center">Voir le catalogue</span></div>
+          <div class="p-bar">
+            <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Appeler</div>
+            <div class="wa"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>WhatsApp</div>
+            <div class="dv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM9 12h7M9 16h7"/></svg>Devis</div>
+          </div>
+        </div></div>
+        <span>Accueil</span>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="m p-fiche">
+          <div class="p-nav"><img class="m-logo" src="img/logo.png" alt="CARZONE"><div class="p-burger"></div></div>
+          <div class="p-fiche-img"><img src="img/jetour-t2-1.jpg" alt="Jetour T2 i-DM"></div>
+          <div class="p-dots"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="p-pad" style="gap:10px">
+            <span class="m-kicker">Jetour · SUV 5 places</span>
+            <h1>Jetour T2 i-DM 2026</h1>
+            <div class="m-big-price"><b>26 000 000 F CFA</b><span>3 ans ou<br>100 000 km</span></div>
+            <div class="m-spec-t">
+              <div><span>Puissance</span><b>375 ch</b></div>
+              <div><span>Couple</span><b>610 Nm</b></div>
+              <div><span>Autonomie élec.</span><b>100 – 140 km</b></div>
+              <div><span>Places</span><b>5</b></div>
+            </div>
+          </div>
+          <div class="p-bar">
+            <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Appeler</div>
+            <div class="wa"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>WhatsApp</div>
+            <div class="dv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM9 12h7M9 16h7"/></svg>Devis</div>
+          </div>
+        </div></div>
+        <span>Fiche modèle</span>
+      </div>
+    </div>
+    <ul class="mock-notes">
+      <li><b>Une barre fixe en bas d'écran</b> (Appeler, WhatsApp, Devis) reste toujours sous le pouce.</li>
+      <li><b>Plus de défilement horizontal ni de grands blancs</b> comme sur les fiches actuelles.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- PLAN -->
+<section class="doc" id="plan">
+  <div class="sec-head">
+    <span class="k">Dans l'ordre, un aperçu à valider après chaque phase</span>
+    <h2>Plan d'implémentation</h2>
+    <p>On garde la base technique du projet (Next.js 14, Tailwind, TypeScript), mais le design et le catalogue reprennent le site en ligne. Le passage de Webador à Vercel se fait en dernier, sans perdre les adresses des pages.</p>
+  </div>
+  <div class="phases">
+    <div class="phase">
+      <div class="n">0</div>
+      <div><h4>Contenus du client</h4><p>À lancer tout de suite, en parallèle du reste.</p></div>
+      <ul><li>Confirmer les prix et compléter les 36 fiches sans prix ou vides</li><li>Vrais avis clients, ou lien vers la fiche Google</li><li>Photo réelle du showroom à la place de l'image générée par IA</li><li>Horaires d'ouverture</li></ul>
+      <div class="dur"><b>—</b><span class="pill wait">Client</span></div>
+    </div>
+    <div class="phase">
+      <div class="n">1</div>
+      <div><h4>Import du catalogue</h4><p>Reprendre ce qui existe au lieu de tout ressaisir.</p></div>
+      <ul><li>Script qui lit les 64 fiches de topcarzone.com : textes, prix, garantie, caractéristiques, galeries</li><li>Remplacement de <code>data/carsData.ts</code> par ces données, avec les mêmes <code>slug</code></li><li>Copie des photos dans <code>public/images</code> et contrôle des doublons</li></ul>
+      <div class="dur"><b>2 j</b><span>dév</span></div>
+    </div>
+    <div class="phase">
+      <div class="n">2</div>
+      <div><h4>Charte</h4><p>Retour à la charte du client.</p></div>
+      <ul><li>Couleurs <code>#CC9000 / #FFB400 / #996C00</code> dans <code>tailwind.config.ts</code></li><li>Montserrat et Roboto via <code>next/font</code></li><li>Suppression du thème noir et or, des flous et de la parallaxe</li><li>Réactivation d'ESLint</li></ul>
+      <div class="dur"><b>1 j</b><span>dév</span></div>
+    </div>
+    <div class="phase">
+      <div class="n">3</div>
+      <div><h4>Composants</h4><p>Les éléments réutilisés sur toutes les pages.</p></div>
+      <ul><li>Header avec bandeau d'adresse, <code>CarCard</code>, <code>PriceTag</code>, <code>SpecTable</code>, onglets de fiche</li><li>Barre d'action mobile (Appeler, WhatsApp, Devis)</li><li>Lien WhatsApp avec le modèle et le prix dans le message</li></ul>
+      <div class="dur"><b>2 j</b><span>dév</span></div>
+    </div>
+    <div class="phase">
+      <div class="n">4</div>
+      <div><h4>Pages</h4><p>Reconstruction d'après les maquettes A à D.</p></div>
+      <ul><li>Accueil, catalogue avec filtres de budget, marque, motorisation, type et places</li><li>64 fiches pré-générées, aux mêmes adresses qu'aujourd'hui</li><li>Services (5 pages), Qui sommes-nous, Témoignages, Contact, mentions légales</li></ul>
+      <div class="dur"><b>3 j</b><span>dév</span></div>
+    </div>
+    <div class="phase">
+      <div class="n">5</div>
+      <div><h4>Formulaire, SEO, performance</h4><p>Ce qui fait arriver des demandes.</p></div>
+      <ul><li>Formulaire avec numéro WhatsApp et choix du modèle, erreur affichée si l'envoi échoue</li><li><code>sitemap.ts</code>, <code>robots.ts</code>, données Google (AutoDealer, et Product avec le prix en XOF)</li><li>Images en AVIF/WebP aux bonnes dimensions</li></ul>
+      <div class="dur"><b>1,5 j</b><span>dév</span></div>
+    </div>
+    <div class="phase">
+      <div class="n">6</div>
+      <div><h4>Bascule depuis Webador</h4><p>La mise en ligne elle-même.</p></div>
+      <ul><li>Validation finale du client sur l'aperçu Vercel</li><li>Domaine topcarzone.com pointé vers Vercel, redirections pour <code>/cart</code> et <code>/wishlist</code></li><li>Envoi du sitemap à Google Search Console, puis résiliation de Webador</li></ul>
+      <div class="dur"><b>1 j</b><span>dév + client</span></div>
+    </div>
+    <div class="total"><span>Total développement, hors attente des contenus</span><b>≈ 10,5 jours</b></div>
+  </div>
+</section>
+
+<!-- TESTS -->
+<section class="doc" id="tests">
+  <div class="sec-head">
+    <span class="k">Ce qui est vérifié avant chaque mise en ligne</span>
+    <h2>Tests</h2>
+  </div>
+  <div class="tests">
+    <div class="card"><h4>Automatiques</h4><ul><li><code>next build</code>, <code>next lint</code> et <code>tsc</code> sans erreur</li><li>Playwright : les 64 anciennes adresses Webador s'ouvrent, les filtres changent les résultats, chaque lien WhatsApp contient le bon modèle</li><li>Script de comparaison : même prix sur la nouvelle fiche que sur l'ancienne</li></ul></div>
+    <div class="card"><h4>Lisibilité et performance</h4><ul><li>Contraste d'au moins 4,5:1 sur tous les textes, y compris les boutons jaunes</li><li>Lighthouse mobile avec réseau 4G ralenti : performance ≥ 90</li><li>Aucun défilement horizontal à 360 px</li></ul></div>
+    <div class="card"><h4>Manuels</h4><ul><li>Envoi réel d'une demande et réception sur contact@topcarzone.com</li><li>Test sur un Android d'entrée de gamme et sur iPhone</li><li>Partage d'une fiche sur WhatsApp : vérifier l'aperçu avec la photo, le titre et le prix</li></ul></div>
+  </div>
+</section>
+
+<!-- DECISIONS -->
+<section class="doc" id="decisions">
+  <div class="sec-head">
+    <span class="k">Réponds par numéro, par exemple « D2 oui, D3 non »</span>
+    <h2>Décisions à valider</h2>
+  </div>
+  <div class="decisions">
+    <div class="dec done"><span class="id">D1</span><div><b>Couleurs</b><p>On garde la charte du site en ligne : blanc, or <code>#CC9000</code>, jaune <code>#FFB400</code>, or foncé <code>#996C00</code>, logo inchangé.</p></div><div class="reco"><span>Confirmé</span>Tu l'as demandé : les couleurs du client sont fixes.</div></div>
+    <div class="dec"><span class="id">D2</span><div><b>Texte des boutons jaunes</b><p>Passer le texte des boutons et du menu actif du blanc au noir chaud.</p></div><div class="reco"><span>Recommandé</span>Oui. La couleur reste la même et le texte devient lisible (contraste de 1,9 à 10,6).</div></div>
+    <div class="dec"><span class="id">D3</span><div><b>Police des caractéristiques</b><p>Ajouter IBM Plex Mono pour les tableaux de caractéristiques, ou rester uniquement en Montserrat et Roboto ?</p></div><div class="reco"><span>Au choix</span>Les deux fonctionnent. Plex Mono rend les tableaux plus faciles à comparer, mais Roboto seul respecte strictement la charte.</div></div>
+    <div class="dec"><span class="id">D4</span><div><b>Prix</b><p>Afficher les prix comme aujourd'hui, et « Prix sur demande » quand il n'y en a pas ?</p></div><div class="reco"><span>Recommandé</span>Oui. Cela permet le filtre par budget, et c'est ce que fait déjà le site.</div></div>
+    <div class="dec"><span class="id">D5</span><div><b>Source du catalogue</b><p>Remplacer les 26 véhicules du projet Next.js par les 64 fiches du site en ligne ?</p></div><div class="reco"><span>Recommandé</span>Oui. Les fiches Next.js (ZEEKR, Tank, Mercedes…) ne correspondent pas au stock réel.</div></div>
+    <div class="dec"><span class="id">D6</span><div><b>Panier et liste d'envies</b><p>Le site Webador a un panier et une liste d'envies. Les garder ?</p></div><div class="reco"><span>Recommandé</span>Les retirer : une voiture se vend sur devis et sur WhatsApp. Les anciennes adresses sont redirigées.</div></div>
+    <div class="dec"><span class="id">D7</span><div><b>Témoignages</b><p>Les avis actuels viennent du modèle Webador. Que met-on à la place ?</p></div><div class="reco"><span>Recommandé</span>De vrais avis fournis par le client, ou la note Google. Sinon, on retire la page jusqu'à ce qu'il en ait.</div></div>
+  </div>
+</section>
+
+<footer class="doc-foot"><span>Préparé à partir de topcarzone.com et du dépôt « Carzone 2 » (commit 9da1376)</span><span>Rien n'est modifié dans le code tant que ce plan n'est pas validé</span></footer>
+</div>
+
+<script>
+(function () {
+  document.querySelectorAll('.stage').forEach(function (st) {
+    var inner = st.querySelector('.stage-inner');
+    var w = Number(st.getAttribute('data-w')) || 1200;
+    function fit() {
+      var s = Math.min(1, st.clientWidth / w);
+      inner.style.transform = 'scale(' + s + ')';
+      st.style.height = Math.ceil(inner.offsetHeight * s) + 'px';
+    }
+    if ('ResizeObserver' in window) {
+      var ro = new ResizeObserver(fit);
+      ro.observe(st); ro.observe(inner);
+    } else { window.addEventListener('resize', fit); }
+    fit();
+  });
+
+  var chips = document.querySelectorAll('.m-chip');
+  var cards = document.querySelectorAll('#cat-grid .m-car');
+  var count = document.getElementById('cat-count');
+  var totals = { all: 64, lo: 12, mid: 11, hi: 5 };
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      var f = c.getAttribute('data-f');
+      chips.forEach(function (o) { o.setAttribute('aria-pressed', String(o === c)); });
+      var n = 0;
+      cards.forEach(function (card) {
+        var keep = f === 'all' || card.getAttribute('data-s') === f;
+        card.hidden = !keep; if (keep) n++;
+      });
+      count.textContent = n + ' modèles affichés sur ' + totals[f];
+    });
+  });
+})();
+</script>

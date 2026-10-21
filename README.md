@@ -1,7 +1,19 @@
-# CARZONE LUXURY — Concessionnaire & Showroom Privé (Bénin)
+# CARZONE Bénin — topcarzone.com
 
-Site web vitrine premium pour la concession automobile de luxe **CARZONE** basée à Cotonou, Bénin.
-Développé avec **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS** et **Framer Motion** dans une esthétique *Dark Luxury*.
+Refonte du site de **CARZONE**, la maison des voitures chinoises et multi-marques au Bénin (showroom à St Michel, Cotonou).
+Développé avec **Next.js 14 (App Router)**, **TypeScript** et **Tailwind CSS**, dans la charte du site actuel : fond blanc, or `#CC9000`, jaune `#FFB400`, or foncé `#996C00`, polices Montserrat et Roboto.
+
+## 🚗 Catalogue
+
+Le catalogue (`data/catalogue.json`) et ses photos (`public/images/catalogue/`) sont importés depuis le site Webador actuel :
+
+```bash
+python scripts/import-catalogue.py
+```
+
+Le script demande `beautifulsoup4` et `Pillow`. Les fiches gardent les mêmes adresses que sur l'ancien site (`/nos-marques-de-voitures/<marque>/<modèle>`). Les fiches vides de l'ancien site ne sont pas affichées.
+
+La proposition validée par le client et ses maquettes sont dans `docs/refonte/`.
 
 ---
 

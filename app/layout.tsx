@@ -1,145 +1,88 @@
 import type { Metadata, Viewport } from "next";
-import { Syne, Inter } from "next/font/google";
+import { IBM_Plex_Mono, Montserrat, Roboto } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import MobileActionBar from "@/components/MobileActionBar";
+import { contact, SITE_URL, socials } from "@/lib/site";
 
-const syne = Syne({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-syne",
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-montserrat",
   display: "swap",
 });
 
-const inter = Inter({
+const roboto = Roboto({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-inter",
+  weight: ["400", "500", "700"],
+  variable: "--font-roboto",
+  display: "swap",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-plex-mono",
   display: "swap",
 });
 
 export const viewport: Viewport = {
-  themeColor: "#050505",
+  themeColor: "#FFFFFF",
 };
 
+const description =
+  "CARZONE, la maison des voitures chinoises et multi-marques au Bénin. BAIC, BYD, Changan, Jetour, Forthing… modèles 2026 avec prix en F CFA, garantie 3 ans ou 100 000 km, showroom à St Michel, Cotonou.";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.topcarzone.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "CARZONE Bénin | Concessionnaire Véhicules Électriques & Multi-Marques Cotonou",
+    default: "CARZONE Bénin | La maison des voitures chinoises et multi-marques",
     template: "%s | CARZONE Bénin",
   },
-  description: "Découvrez le showroom automobile d'exception à Cotonou, Bénin. Véhicules neufs 100% électriques, hybrides rechargeables & thermiques (BYD, Jetour, Changan, Chery, Zeekr). Vente, pièces d'origine, garantie & conciergerie privée.",
-  keywords: [
-    "Voiture électrique Bénin",
-    "Achat véhicule Cotonou",
-    "BYD Bénin",
-    "Jetour Cotonou",
-    "Changan Bénin",
-    "Concessionnaire automobile Bénin",
-    "Topcarzone",
-    "SUV Hybride Cotonou",
-    "Voiture chinoise de luxe",
-    "Vente auto Bénin",
-  ],
-  authors: [{ name: "CARZONE Bénin" }],
-  creator: "CARZONE Bénin",
-  publisher: "CARZONE Bénin",
-  formatDetection: {
-    telephone: true,
-    address: true,
-    email: true,
-  },
+  description,
   openGraph: {
-    title: "CARZONE Bénin | Concessionnaire Véhicules Électriques & Luxe à Cotonou",
-    description: "Le premier showroom automobile d'exception au Bénin. BYD, Jetour, Changan, Chery & véhicules multi-marques d'élite. Service garanti, importation & conciergerie VIP.",
-    url: "https://www.topcarzone.com",
+    title: "CARZONE Bénin | La maison des voitures chinoises et multi-marques",
+    description,
+    url: SITE_URL,
     siteName: "CARZONE Bénin",
     locale: "fr_FR",
     type: "website",
-    images: [
-      {
-        url: "/images/hero-chinese-cars.jpg",
-        width: 1200,
-        height: 630,
-        alt: "CARZONE Bénin — Showroom Automobile Privé & Véhicules Neufs à Cotonou",
-      },
-    ],
+    images: [{ url: "/images/models/jetour-traveller-t2.jpg", width: 1020, height: 587, alt: "Jetour T2 chez CARZONE Cotonou" }],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "CARZONE Bénin | Concessionnaire Premium & Électrique à Cotonou",
-    description: "Découvrez la nouvelle génération automobile au Bénin (BYD, Jetour, Changan, Zeekr). Showroom privé & conciergerie VIP.",
-    images: ["/images/hero-chinese-cars.jpg"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
+  twitter: { card: "summary_large_image" },
+  alternates: { canonical: "/" },
 };
 
-import WhatsAppButton from "@/components/WhatsAppButton";
+const dealerJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AutoDealer",
+  name: "CARZONE Bénin",
+  url: SITE_URL,
+  logo: `${SITE_URL}/images/logo.png`,
+  telephone: "+2290192626262",
+  email: contact.email,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: contact.addressLine1,
+    addressLocality: "Cotonou",
+    addressCountry: "BJ",
+  },
+  sameAs: socials.map((s) => s.href),
+};
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "AutoDealer",
-    "name": "CARZONE Bénin",
-    "image": "https://www.topcarzone.com/images/hero-chinese-cars.jpg",
-    "@id": "https://www.topcarzone.com",
-    "url": "https://www.topcarzone.com",
-    "telephone": "+2290192626262",
-    "priceRange": "$$$$",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Lot 167 Rue 407 Gbedomidji, St Michel",
-      "addressLocality": "Cotonou",
-      "addressRegion": "Littoral",
-      "postalCode": "99000",
-      "addressCountry": "BJ"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": 6.3653,
-      "longitude": 2.4206
-    },
-    "openingHoursSpecification": {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-      ],
-      "opens": "08:00",
-      "closes": "19:00"
-    },
-    "sameAs": [
-      "https://tiktok.com/@carzonebj"
-    ]
-  };
-
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${syne.variable} ${inter.variable} dark scroll-smooth`}>
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
-      <body className="bg-[#050505] text-[#E4E4E7] font-sans antialiased min-h-screen selection:bg-[#E5C158] selection:text-[#050505]">
-        {children}
-        <WhatsAppButton />
+    <html lang="fr" className={`${montserrat.variable} ${roboto.variable} ${plexMono.variable}`}>
+      <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(dealerJsonLd) }} />
+        <a href="#contenu" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-cz-dark focus:px-4 focus:py-2 focus:text-white">
+          Aller au contenu
+        </a>
+        <Header />
+        <main id="contenu">{children}</main>
+        <Footer />
+        <MobileActionBar />
       </body>
     </html>
   );

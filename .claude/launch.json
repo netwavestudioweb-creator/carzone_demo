@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "carzone-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "3005"],
+      "port": 3005
+    },
+    {
+      "name": "carzone",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "start", "-p", "3005"],
+      "port": 3005
+    }
+  ]
+}
