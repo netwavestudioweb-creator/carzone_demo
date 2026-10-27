@@ -31,6 +31,7 @@ export interface Model {
   sections: Section[];
   images: string[];
   hasContent: boolean;
+  featured?: boolean;
 }
 
 export const CATALOGUE_PATH = "/nos-marques-de-voitures";

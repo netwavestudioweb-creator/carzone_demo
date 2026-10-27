@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { contact, navLinks, socials, whatsappLink } from "@/lib/site";
+import { navLinks, phoneHref, socials, whatsappLink, type Contact } from "@/lib/site";
 
-export default function Footer() {
+export default function Footer({ contact }: { contact: Contact }) {
   return (
     <footer className="border-t border-cz-line bg-cz-soft pb-24 lg:pb-0">
       <div className="wrap grid gap-10 py-12 md:grid-cols-[1.2fr_1fr_1fr]">
@@ -22,8 +22,8 @@ export default function Footer() {
         <div className="grid content-start gap-2 text-sm">
           <h2 className="mb-1 font-mono text-[11px] font-medium uppercase tracking-[0.07em] text-cz-mute">Showroom</h2>
           <p>{contact.addressLine1}<br />{contact.addressLine2}</p>
-          <a href={contact.phoneHref} className="w-fit hover:text-cz-gold-dark">Tél. {contact.phoneDisplay}</a>
-          <a href={whatsappLink()} target="_blank" rel="noopener" className="w-fit hover:text-cz-gold-dark">WhatsApp {contact.whatsappDisplay}</a>
+          <a href={phoneHref(contact)} className="w-fit hover:text-cz-gold-dark">Tél. {contact.phoneDisplay}</a>
+          <a href={whatsappLink(contact.whatsappDisplay)} target="_blank" rel="noopener" className="w-fit hover:text-cz-gold-dark">WhatsApp {contact.whatsappDisplay}</a>
           <a href={`mailto:${contact.email}`} className="w-fit hover:text-cz-gold-dark">{contact.email}</a>
           <div className="mt-2 flex gap-4">
             {socials.map((s) => (

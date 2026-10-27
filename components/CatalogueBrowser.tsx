@@ -18,7 +18,7 @@ function toggle(list: string[], value: string) {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
-export default function CatalogueBrowser({ models, title, intro }: { models: Model[]; title: string; intro?: string }) {
+export default function CatalogueBrowser({ models, whatsapp, title, intro }: { models: Model[]; whatsapp: string; title: string; intro?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -196,7 +196,7 @@ export default function CatalogueBrowser({ models, title, intro }: { models: Mod
           {results.length ? (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {results.map((m, i) => (
-                <CarCard key={m.slug} model={m} priority={i < 3} />
+                <CarCard key={m.slug} model={m} whatsapp={whatsapp} priority={i < 3} />
               ))}
             </div>
           ) : (

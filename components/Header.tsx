@@ -5,10 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { contact, navLinks, whatsappLink } from "@/lib/site";
+import { navLinks, phoneHref, whatsappLink, type Contact } from "@/lib/site";
 import { WhatsAppIcon } from "@/components/icons";
 
-export default function Header() {
+export default function Header({ contact }: { contact: Contact }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -21,8 +21,8 @@ export default function Header() {
       <div className="hidden bg-cz-dark text-[12.5px] text-white md:block">
         <div className="wrap flex gap-8 py-2">
           <span><b className="font-medium text-cz-yellow">Showroom</b> St Michel Kétékété, Cotonou</span>
-          <a href={contact.phoneHref} className="hover:underline"><b className="font-medium text-cz-yellow">Tél.</b> {contact.phoneDisplay}</a>
-          <a href={whatsappLink()} target="_blank" rel="noopener" className="hover:underline"><b className="font-medium text-cz-yellow">WhatsApp</b> {contact.whatsappDisplay}</a>
+          <a href={phoneHref(contact)} className="hover:underline"><b className="font-medium text-cz-yellow">Tél.</b> {contact.phoneDisplay}</a>
+          <a href={whatsappLink(contact.whatsappDisplay)} target="_blank" rel="noopener" className="hover:underline"><b className="font-medium text-cz-yellow">WhatsApp</b> {contact.whatsappDisplay}</a>
           <a href={`mailto:${contact.email}`} className="ml-auto hover:underline">{contact.email}</a>
         </div>
       </div>
@@ -47,7 +47,7 @@ export default function Header() {
           </nav>
 
           <div className="ml-auto hidden items-center gap-3 lg:flex">
-            <a href={whatsappLink()} target="_blank" rel="noopener" className="btn btn-wa">
+            <a href={whatsappLink(contact.whatsappDisplay)} target="_blank" rel="noopener" className="btn btn-wa">
               <WhatsAppIcon /> WhatsApp
             </a>
             <Link href="/contactez-nous#devis" className="btn btn-yellow">Demander un devis</Link>

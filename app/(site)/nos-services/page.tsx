@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Car, ClipboardList, KeyRound, Wrench, Cog } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons";
+import { getContact } from "@/lib/catalogue";
 import { whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -49,7 +50,8 @@ const SERVICES = [
   },
 ];
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const contact = await getContact();
   return (
     <>
       <section className="border-b border-cz-line">
@@ -69,7 +71,7 @@ export default function ServicesPage() {
               <h2 className="text-xl font-bold">{s.title}</h2>
               <p className="text-[15px] text-cz-mute">{s.text}</p>
             </div>
-            <a href={whatsappLink(s.message)} target="_blank" rel="noopener" className="btn btn-wa w-fit">
+            <a href={whatsappLink(contact.whatsappDisplay, s.message)} target="_blank" rel="noopener" className="btn btn-wa w-fit">
               <WhatsAppIcon /> En parler sur WhatsApp
             </a>
           </article>

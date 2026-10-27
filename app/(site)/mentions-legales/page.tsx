@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { contact } from "@/lib/site";
+import { getContact } from "@/lib/catalogue";
 
 export const metadata: Metadata = {
   title: "Mentions légales et données personnelles",
   robots: { index: false },
 };
 
-export default function LegalPage() {
+export default async function LegalPage() {
+  const contact = await getContact();
   return (
     <div className="wrap grid max-w-3xl gap-8 py-12">
       <h1 className="text-3xl font-extrabold">Mentions légales et données personnelles</h1>

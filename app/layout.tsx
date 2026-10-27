@@ -1,10 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Montserrat, Roboto } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import MobileActionBar from "@/components/MobileActionBar";
-import { contact, SITE_URL, socials } from "@/lib/site";
+import { SITE_URL } from "@/lib/site";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -54,36 +51,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-const dealerJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "AutoDealer",
-  name: "CARZONE Bénin",
-  url: SITE_URL,
-  logo: `${SITE_URL}/images/logo.png`,
-  telephone: "+2290192626262",
-  email: contact.email,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: contact.addressLine1,
-    addressLocality: "Cotonou",
-    addressCountry: "BJ",
-  },
-  sameAs: socials.map((s) => s.href),
-};
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" className={`${montserrat.variable} ${roboto.variable} ${plexMono.variable}`}>
-      <body>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(dealerJsonLd) }} />
-        <a href="#contenu" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-cz-dark focus:px-4 focus:py-2 focus:text-white">
-          Aller au contenu
-        </a>
-        <Header />
-        <main id="contenu">{children}</main>
-        <Footer />
-        <MobileActionBar />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

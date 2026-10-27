@@ -4,7 +4,7 @@ import { coverImage, displayName, formatPrice, shortSpec, type Model } from "@/l
 import { whatsappLink } from "@/lib/site";
 import { WhatsAppIcon } from "@/components/icons";
 
-export default function CarCard({ model, priority = false }: { model: Model; priority?: boolean }) {
+export default function CarCard({ model, whatsapp, priority = false }: { model: Model; whatsapp: string; priority?: boolean }) {
   const name = displayName(model);
   return (
     <article className="group grid grid-rows-[auto_1fr] overflow-hidden rounded-lg border border-cz-line bg-white transition-shadow hover:shadow-[0_8px_28px_rgba(0,0,0,0.08)]">
@@ -35,7 +35,7 @@ export default function CarCard({ model, priority = false }: { model: Model; pri
         <div className="flex gap-2 pt-1">
           <Link href={model.path} className="btn btn-line flex-1 px-3 py-2 text-[12.5px]">Voir la fiche</Link>
           <a
-            href={whatsappLink(`Bonjour CARZONE, le ${name}${model.price ? ` à ${formatPrice(model.price)}` : ""} m'intéresse. Est-il disponible ?`)}
+            href={whatsappLink(whatsapp, `Bonjour CARZONE, le ${name}${model.price ? ` à ${formatPrice(model.price)}` : ""} m'intéresse. Est-il disponible ?`)}
             target="_blank"
             rel="noopener"
             className="btn btn-wa px-3 py-2 text-[12.5px]"

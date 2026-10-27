@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
 import { WhatsAppIcon } from "@/components/icons";
-import { displayName, models } from "@/lib/catalogue";
-import { contact, socials, whatsappLink } from "@/lib/site";
+import { displayName, getContact, getModels } from "@/lib/catalogue";
+import { MAPS_URL, phoneHref, socials, whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contactez-nous",
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contactez-nous" },
 };
 
-export default function ContactPage({ searchParams }: { searchParams: { modele?: string } }) {
+export default async function ContactPage({ searchParams }: { searchParams: { modele?: string } }) {
+  const [models, contact] = await Promise.all([getModels(), getContact()]);
   const names = models.map(displayName);
   const preset = searchParams.modele && names.includes(searchParams.modele) ? searchParams.modele : undefined;
 
@@ -21,13 +22,13 @@ export default function ContactPage({ searchParams }: { searchParams: { modele?:
           <span className="font-mono text-xs uppercase tracking-[0.06em] text-cz-yellow">Contactez-nous</span>
           <h1 className="text-3xl font-extrabold !text-white sm:text-4xl">Passez au showroom ou écrivez-nous</h1>
           <p className="text-[#CFCAC0]">Pour un devis, un essai ou une question sur un modèle, la réponse la plus rapide passe par WhatsApp.</p>
-          <a href={whatsappLink()} target="_blank" rel="noopener" className="btn btn-wa w-fit">
+          <a href={whatsappLink(contact.whatsappDisplay)} target="_blank" rel="noopener" className="btn btn-wa w-fit">
             <WhatsAppIcon /> {contact.whatsappDisplay}
           </a>
           <dl className="mt-4 grid gap-3">
             {[
               { label: "Adresse", value: <>{contact.addressLine1}<br />{contact.addressLine2}</> },
-              { label: "Téléphone", value: <a href={contact.phoneHref} className="hover:underline">{contact.phoneDisplay}</a> },
+              { label: "Téléphone", value: <a href={phoneHref(contact)} className="hover:underline">{contact.phoneDisplay}</a> },
               { label: "E-mail", value: <a href={`mailto:${contact.email}`} className="hover:underline">{contact.email}</a> },
               {
                 label: "Réseaux",
@@ -46,7 +47,7 @@ export default function ContactPage({ searchParams }: { searchParams: { modele?:
               </div>
             ))}
           </dl>
-          <a href={contact.mapsUrl} target="_blank" rel="noopener" className="w-fit font-medium text-cz-yellow hover:underline">Voir l&apos;itinéraire sur Google Maps →</a>
+          <a href={MAPS_URL} target="_blank" rel="noopener" className="w-fit font-medium text-cz-yellow hover:underline">Voir l&apos;itinéraire sur Google Maps →</a>
         </div>
         <ContactForm models={names} defaultModel={preset} />
       </div>

@@ -15,9 +15,10 @@ import {
   findByPath,
   forListing,
   formatPrice,
+  getContact,
+  getModels,
   groupPaths,
   keySpecs,
-  models,
   modelsUnder,
   type Model,
 } from "@/lib/catalogue";
@@ -25,21 +26,24 @@ import { SITE_URL, whatsappLink } from "@/lib/site";
 
 type Props = { params: { slug: string[] } };
 
-export const dynamicParams = false;
+// Les modèles ajoutés dans l'admin après le build sont générés à la première visite.
+export const dynamicParams = true;
 
-export function generateStaticParams() {
-  return [...models.map((m) => ({ slug: m.segments })), ...groupPaths().map((slug) => ({ slug }))];
+export async function generateStaticParams() {
+  const models = await getModels();
+  return [...models.map((m) => ({ slug: m.segments })), ...groupPaths(models).map((slug) => ({ slug }))];
 }
 
-function groupTitle(segments: string[]): string {
-  const children = modelsUnder(segments);
+function groupTitle(models: Model[], segments: string[]): string {
+  const children = modelsUnder(models, segments);
   if (segments.length === 1) return children[0]?.brand ?? segments[0];
   const last = segments[segments.length - 1].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   return `${children[0]?.brand ?? ""} · ${last}`;
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-  const model = findByPath(params.slug);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const models = await getModels();
+  const model = findByPath(models, params.slug);
   if (model) {
     const name = displayName(model);
     const price = model.price ? ` à ${formatPrice(model.price)}` : "";
@@ -50,24 +54,24 @@ export function generateMetadata({ params }: Props): Metadata {
       openGraph: { title: `${name}${price}`, images: [{ url: coverImage(model) }] },
     };
   }
-  const title = groupTitle(params.slug);
-  return { title, alternates: { canonical: `${CATALOGUE_PATH}/${params.slug.join("/")}` } };
+  return { title: groupTitle(models, params.slug), alternates: { canonical: `${CATALOGUE_PATH}/${params.slug.join("/")}` } };
 }
 
-export default function Page({ params }: Props) {
-  const model = findByPath(params.slug);
-  if (model) return <ModelPage model={model} />;
+export default async function Page({ params }: Props) {
+  const [models, contact] = await Promise.all([getModels(), getContact()]);
+  const model = findByPath(models, params.slug);
+  if (model) return <ModelPage model={model} models={models} whatsapp={contact.whatsappDisplay} />;
 
-  const children = modelsUnder(params.slug);
+  const children = modelsUnder(models, params.slug);
   if (!children.length) notFound();
   return (
     <Suspense>
-      <CatalogueBrowser models={forListing(children)} title={groupTitle(params.slug)} />
+      <CatalogueBrowser models={forListing(children)} whatsapp={contact.whatsappDisplay} title={groupTitle(models, params.slug)} />
     </Suspense>
   );
 }
 
-function ModelPage({ model }: { model: Model }) {
+function ModelPage({ model, models, whatsapp }: { model: Model; models: Model[]; whatsapp: string }) {
   const name = displayName(model);
   const specs = keySpecs(model);
   const brandPath = `${CATALOGUE_PATH}/${model.segments[0]}`;
@@ -82,7 +86,7 @@ function ModelPage({ model }: { model: Model }) {
     "@type": "Car",
     name,
     brand: { "@type": "Brand", name: model.brand },
-    image: model.images.map((i) => `${SITE_URL}${i}`),
+    image: model.images.map((i) => (i.startsWith("http") ? i : `${SITE_URL}${i}`)),
     description: model.tagline ?? undefined,
     vehicleEngine: { "@type": "EngineSpecification", name: model.engine },
     ...(model.price && {
@@ -139,7 +143,7 @@ function ModelPage({ model }: { model: Model }) {
             <Link href={`/contactez-nous?modele=${encodeURIComponent(name)}#devis`} className="btn btn-yellow py-4 text-[15px]">
               Demander un devis pour ce modèle
             </Link>
-            <a href={whatsappLink(message)} target="_blank" rel="noopener" className="btn btn-wa py-4 text-[15px]">
+            <a href={whatsappLink(whatsapp, message)} target="_blank" rel="noopener" className="btn btn-wa py-4 text-[15px]">
               <WhatsAppIcon /> Écrire sur WhatsApp
             </a>
           </div>
@@ -157,7 +161,7 @@ function ModelPage({ model }: { model: Model }) {
             <h2 className="text-2xl font-extrabold">Vous aimerez aussi</h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {similar.map((m) => (
-                <CarCard key={m.slug} model={m} />
+                <CarCard key={m.slug} model={m} whatsapp={whatsapp} />
               ))}
             </div>
           </div>

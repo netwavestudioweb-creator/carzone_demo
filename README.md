@@ -15,6 +15,34 @@ Le script demande `beautifulsoup4` et `Pillow`. Les fiches gardent les mêmes ad
 
 La proposition validée par le client et ses maquettes sont dans `docs/refonte/`.
 
+## 🛠️ Administration (Sanity)
+
+CARZONE gère ses modèles, ses prix, ses photos et ses coordonnées sur **`/admin`**. Le guide d'utilisation destiné au client est dans `docs/guide-administration-carzone.md`.
+
+Tant que `NEXT_PUBLIC_SANITY_PROJECT_ID` est vide, le site lit `data/catalogue.json` et `/admin` affiche un message d'attente.
+
+### Mise en service (une seule fois)
+
+1. **Créer le projet** sur [sanity.io/manage](https://www.sanity.io/manage) : *Create new project*, nommé « CARZONE », dataset `production`, plan gratuit. Copier le **Project ID**.
+2. **Autoriser le site** : *API → CORS origins → Add CORS origin*, cocher *Allow credentials*, pour :
+   - `http://localhost:3005`
+   - `https://www.topcarzone.com`
+   - l'adresse d'aperçu Vercel du projet
+3. **Créer un jeton d'écriture** : *API → Tokens → Add API token*, permission *Editor*. Il ne sert qu'au transfert initial.
+4. **Renseigner `.env.local`** avec `NEXT_PUBLIC_SANITY_PROJECT_ID` et `SANITY_WRITE_TOKEN`, puis transférer les 63 fiches :
+   ```bash
+   node --env-file=.env.local scripts/seed-sanity.mjs
+   ```
+5. **Vercel** (*Settings → Environment Variables*) : ajouter `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET=production` et `SANITY_REVALIDATE_SECRET`, une longue chaîne aléatoire. Ne pas y mettre `SANITY_WRITE_TOKEN`. Redéployer ensuite.
+6. **Webhook de mise à jour** : *API → Webhooks → Create webhook* :
+   - URL : `https://www.topcarzone.com/api/revalidate`
+   - Dataset `production`, déclencheurs *Create / Update / Delete*
+   - Filtre : `_type in ["model", "settings"]`
+   - Secret : la même valeur que `SANITY_REVALIDATE_SECRET`
+7. **Inviter CARZONE** : *Members → Invite* avec le rôle *Administrator*. À la livraison, transférer la propriété du projet à CARZONE.
+
+Sans webhook, le site se met tout de même à jour au bout d'une heure au maximum.
+
 ---
 
 ## 🚀 Démarrage Rapide en Local

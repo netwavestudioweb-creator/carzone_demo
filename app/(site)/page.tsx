@@ -3,19 +3,8 @@ import Link from "next/link";
 import CarCard from "@/components/CarCard";
 import ContactForm from "@/components/ContactForm";
 import { WhatsAppIcon } from "@/components/icons";
-import { brandCounts, CATALOGUE_PATH, displayName, formatPrice, minPrice, models } from "@/lib/catalogue";
-import { contact, whatsappLink } from "@/lib/site";
-
-const FEATURED = [
-  "jetour-2026-t-2-i-dm-2026",
-  "byd-leopard-8",
-  "changan-deepal-s09",
-  "forthing-forthing-s7",
-  "baic-baic-b30e-baic-b30e-standard-lv3-suv-hybride-5-places",
-  "forthing-forthing-v9-hev",
-  "byd-byd-song-plus-2026",
-  "toyota-toyota-land-cruiser-prado",
-];
+import { brandCounts, CATALOGUE_PATH, displayName, featuredModels, formatPrice, getContact, getModels, minPrice } from "@/lib/catalogue";
+import { phoneHref, whatsappLink } from "@/lib/site";
 
 const STEPS = [
   { title: "Accueil et conseil", text: "Au showroom ou sur WhatsApp : budget, usage, préférences, essai sur route." },
@@ -24,11 +13,13 @@ const STEPS = [
   { title: "Livraison clé en main", text: "Immatriculation, présentation du véhicule et suivi des entretiens." },
 ];
 
-export default function Home() {
-  const featured = FEATURED.map((slug) => models.find((m) => m.slug === slug)).filter((m) => m !== undefined).slice(0, 4);
-  const hero = models.find((m) => m.slug === "jetour-2026-t-2-i-dm-2026");
-  const brands = brandCounts();
-  const from = minPrice();
+export default async function Home() {
+  const [models, contact] = await Promise.all([getModels(), getContact()]);
+  const featured = featuredModels(models);
+  // La photo d'accueil montre le Jetour T2 : la vignette renvoie vers sa fiche tant qu'il est au catalogue.
+  const hero = models.find((m) => m.path.endsWith("/jetour-2026/t-2-i-dm-2026")) ?? featured[0];
+  const brands = brandCounts(models);
+  const from = minPrice(models);
 
   return (
     <>
@@ -45,7 +36,7 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href={CATALOGUE_PATH} className="btn btn-yellow px-6 py-4 text-[15px]">Voir les {models.length} modèles</Link>
-            <a href={whatsappLink()} target="_blank" rel="noopener" className="btn btn-wa px-6 py-4 text-[15px]">
+            <a href={whatsappLink(contact.whatsappDisplay)} target="_blank" rel="noopener" className="btn btn-wa px-6 py-4 text-[15px]">
               <WhatsAppIcon /> {contact.whatsappDisplay}
             </a>
           </div>
@@ -109,7 +100,7 @@ export default function Home() {
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {featured.map((m) => (
-            <CarCard key={m.slug} model={m} />
+            <CarCard key={m.slug} model={m} whatsapp={contact.whatsappDisplay} />
           ))}
         </div>
       </section>
@@ -139,8 +130,8 @@ export default function Home() {
             <dl className="mt-2 grid gap-3">
               {[
                 { label: "Adresse", value: <>{contact.addressLine1}, {contact.addressLine2}</> },
-                { label: "Téléphone", value: <a href={contact.phoneHref} className="hover:underline">{contact.phoneDisplay}</a> },
-                { label: "WhatsApp", value: <a href={whatsappLink()} target="_blank" rel="noopener" className="hover:underline">{contact.whatsappDisplay}</a> },
+                { label: "Téléphone", value: <a href={phoneHref(contact)} className="hover:underline">{contact.phoneDisplay}</a> },
+                { label: "WhatsApp", value: <a href={whatsappLink(contact.whatsappDisplay)} target="_blank" rel="noopener" className="hover:underline">{contact.whatsappDisplay}</a> },
                 { label: "E-mail", value: <a href={`mailto:${contact.email}`} className="hover:underline">{contact.email}</a> },
               ].map((r) => (
                 <div key={r.label} className="grid grid-cols-[100px_1fr] gap-2 border-t border-white/20 pt-2.5">
